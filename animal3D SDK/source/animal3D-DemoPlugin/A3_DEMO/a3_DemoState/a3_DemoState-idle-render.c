@@ -189,6 +189,8 @@ void a3demo_setDefaultGraphicsState()
 //-----------------------------------------------------------------------------
 // RENDER
 
+#include <math.h>
+
 // test render
 void a3demo_renderTest(a3_DemoState const* demoState, a3f64 const dt)
 {
@@ -200,7 +202,12 @@ void a3demo_renderTest(a3_DemoState const* demoState, a3f64 const dt)
 
 	// ****TO-DO: render scene here
 	//	-> implement "render" from tutorial
-
+	const float color[] = {
+		cosf((float)demoState->dt_timer_tot) * 0.5f + 0.5f,
+		sinf((float)demoState->dt_timer_tot) * 0.5f + 0.5f,
+		0.0f, 1.0f
+	};
+	glClearBufferfv(GL_COLOR, 0, color);
 }
 
 void a3demo_render(a3_DemoState const* demoState, a3f64 const dt)
