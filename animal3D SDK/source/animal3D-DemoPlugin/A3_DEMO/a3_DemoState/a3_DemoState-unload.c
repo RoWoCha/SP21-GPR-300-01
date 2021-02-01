@@ -45,7 +45,7 @@ void a3demo_unloadGeometry(a3_DemoState* demoState)
 {
 	// ****TO-DO: 
 	//	-> uncomment model unloading algorithm
-/*	a3_BufferObject* currentBuff = demoState->drawDataBuffer,
+	a3_BufferObject* currentBuff = demoState->drawDataBuffer,
 		* const endBuff = currentBuff + demoStateMaxCount_drawDataBuffer;
 	a3_VertexArrayDescriptor* currentVAO = demoState->vertexArray,
 		* const endVAO = currentVAO + demoStateMaxCount_vertexArray;
@@ -57,7 +57,7 @@ void a3demo_unloadGeometry(a3_DemoState* demoState)
 	while (currentVAO < endVAO)
 		a3vertexArrayReleaseDescriptor(currentVAO++);
 	while (currentDraw < endDraw)
-		a3vertexDrawableRelease(currentDraw++);*/
+		a3vertexDrawableRelease(currentDraw++);
 }
 
 // utility to unload shaders
