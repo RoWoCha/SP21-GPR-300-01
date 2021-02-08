@@ -193,7 +193,7 @@ struct a3_DemoState
 	};
 
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment buffers union
 	// draw data buffers
 	union {
@@ -204,7 +204,7 @@ struct a3_DemoState
 		};
 	};
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment vertex arrays union
 	// vertex array objects
 	union {
@@ -219,7 +219,7 @@ struct a3_DemoState
 		};
 	};
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment drawables union
 	// drawables
 	union {
@@ -242,9 +242,9 @@ struct a3_DemoState
 	};
 
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment shader programs union
-/*	// shader programs and uniforms
+	// shader programs and uniforms
 	union {
 		a3_DemoStateShaderProgram shaderProgram[demoStateMaxCount_shaderProgram];
 		struct {
@@ -267,12 +267,12 @@ struct a3_DemoState
 				prog_drawTangentBasis_instanced[1],			// draw vertex/face tangent bases and wireframe with instancing
 				prog_drawTangentBasis[1];					// draw vertex/face tangent bases and wireframe
 		};
-	};*/
+	};
 
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment textures union
-/*	// textures
+	// textures
 	union {
 		a3_Texture texture[demoStateMaxCount_texture];
 		struct {
@@ -284,7 +284,7 @@ struct a3_DemoState
 				tex_testsprite[1],
 				tex_checker[1];
 		};
-	};*/
+	};
 
 
 	// managed objects, no touchie
