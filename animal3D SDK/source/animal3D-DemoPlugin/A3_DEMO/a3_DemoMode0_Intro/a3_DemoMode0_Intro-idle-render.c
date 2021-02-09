@@ -269,7 +269,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 
 		case intro_renderModeTexture:
 			// activate diffuse map, fall through to solid color
-			// ****DONE?: 
+			// ****DONE???: 
 			//	-> activate diffuse texture on texture unit 0
 			a3textureActivate(texture_dm[j], a3tex_unit00);
 

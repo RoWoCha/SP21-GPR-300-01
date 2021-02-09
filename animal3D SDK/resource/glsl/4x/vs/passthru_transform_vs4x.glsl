@@ -26,7 +26,7 @@
 
 
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> declare model-view-projection matrix uniform
 //		(hint: correct name is used in codebase)
 //	-> transform input position by MVP matrix, store as output
