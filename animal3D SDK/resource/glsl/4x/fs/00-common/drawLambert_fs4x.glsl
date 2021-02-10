@@ -41,6 +41,7 @@ layout (location = 0) out vec4 rtFragColor;
 
 in vec4 vPosition;
 in vec4 vNormal;
+in vec2 vTexcoord;
 
 //uniform int uLightCount;
 uniform vec4 uLightPos[NUM_LIGHTS];
@@ -48,22 +49,9 @@ uniform vec4 uLightColor[NUM_LIGHTS];
 uniform float uLightRadii[NUM_LIGHTS];
 
 uniform vec4 uColor; // camera space
+uniform sampler2D uTex_dm;
 
-vec4 lambertShadingCalc(int lightNum)
-{
-	float distance = length(uLightPos[lightNum] - vPosition);
-	vec4 lightVec = normalize(uLightPos[lightNum] - vPosition);
-	vec4 normal = normalize(vNormal);
-
-	//diffuse coefficient:
-	float diffCoeff = max(0.0, dot(normal, lightVec));
-	
-	//adding attenuation
-	diffCoeff *= (1.0 / (1.0 + uLightRadii[lightNum] * distance * distance));
-	vec4 result = uColor * uLightColor[lightNum] * diffCoeff;
-
-	return result;
-}
+vec4 lambertShadingCalc(int lightNum);
 
 void main()
 {
@@ -77,6 +65,23 @@ void main()
 	}
 
 	// DEBUGGING
-	rtFragColor = color;
+	rtFragColor = texture(uTex_dm, vTexcoord) * color;
 	//rtFragColor = vec4(kd, kd, kd, 1.0);
+}
+
+//Function for calculation of lambert shading from one light source
+vec4 lambertShadingCalc(int lightNum)
+{
+	float distance = length(uLightPos[lightNum] - vPosition);
+	vec4 lightVec = normalize(uLightPos[lightNum] - vPosition);
+	vec4 normal = normalize(vNormal);
+
+	//diffuse coefficient:
+	float diffCoeff = max(0.0, dot(normal, lightVec));
+	
+	//adding attenuation
+	diffCoeff *= (1.0 / (1.0 + uLightRadii[lightNum] * distance * distance));
+	vec4 result = diffCoeff * uLightColor[lightNum] * uColor;
+
+	return result;
 }
