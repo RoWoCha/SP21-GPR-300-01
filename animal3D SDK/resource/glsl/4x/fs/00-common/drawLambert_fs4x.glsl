@@ -43,7 +43,6 @@ in vec4 vPosition;
 in vec4 vNormal;
 in vec2 vTexcoord;
 
-//uniform int uLightCount;
 uniform vec4 uLightPos[NUM_LIGHTS];
 uniform vec4 uLightColor[NUM_LIGHTS];
 uniform float uLightRadii[NUM_LIGHTS];
@@ -64,8 +63,9 @@ void main()
 		color += lambertShadingCalc(i);
 	}
 
-	// DEBUGGING
 	rtFragColor = texture(uTex_dm, vTexcoord) * color;
+	
+	// DEBUGGING
 	//rtFragColor = vec4(kd, kd, kd, 1.0);
 }
 
