@@ -24,16 +24,73 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> start with list from "drawLambert_fs4x"
 //		(hint: can put common stuff in "utilCommon_fs4x" to avoid redundancy)
 //	-> calculate view vector, reflection vector and Phong coefficient
 //	-> calculate Phong shading model for multiple lights
 
+// Resources used:
+// Blue Book, p.668
+
+const int NUM_LIGHTS = 4;
+
 layout (location = 0) out vec4 rtFragColor;
+
+in vec4 vPosition;
+in vec4 vNormal;
+in vec2 vTexcoord;
+
+uniform vec4 uLightPos[NUM_LIGHTS];
+uniform vec4 uLightColor[NUM_LIGHTS];
+uniform float uLightRadii[NUM_LIGHTS];
+
+uniform vec4 uColor;
+uniform sampler2D uTex_dm;
+uniform sampler2D uTex_sm;
+
+vec4 phongShadingCalc(int lightNum);
 
 void main()
 {
-	// DUMMY OUTPUT: all fragments are OPAQUE GREEN
-	rtFragColor = vec4(0.0, 1.0, 0.0, 1.0);
+	// DUMMY OUTPUT: all fragments are OPAQUE LIME
+	//rtFragColor = vec4(0.5, 1.0, 0.0, 1.0);
+
+	vec4 color;
+
+	for(int i = 0; i < NUM_LIGHTS; i++)
+	{
+		color += vec4(vec3(phongShadingCalc(i)), 0.0);
+	}
+
+	rtFragColor = color;
+	
+	// DEBUGGING
+	//rtFragColor = vec4(kd, kd, kd, 1.0);
+}
+
+//Function for calculation of Phong shading from one light source
+vec4 phongShadingCalc(int lightNum)
+{
+	float distance = length(uLightPos[lightNum] - vPosition);
+	vec4 lightVec = normalize(uLightPos[lightNum] - vPosition);
+	vec4 normal = normalize(vNormal);
+
+	vec4 viewVec = normalize(-vPosition);
+	vec4 reflectionVec = reflect(-lightVec, normal);	
+
+	//diffuse (Lambert) coefficient:
+	float diffCoeff = max(0.0, dot(normal, lightVec));
+	vec4 diffuse_color = diffCoeff * texture(uTex_dm, vTexcoord);
+
+	//specular (Phong) coefficient
+	float specCoeff = max(0.0, dot(viewVec, reflectionVec));
+	specCoeff *= specCoeff;
+	vec4 specular_color = specCoeff * texture(uTex_sm, vTexcoord);
+
+	//adding attenuation
+	vec4 resCoeff = (diffuse_color + specular_color) * (1.0 / (uLightRadii[lightNum] * distance * distance + 1.0));
+	vec4 result = resCoeff * uLightColor[lightNum] * uColor;
+
+	return result;
 }

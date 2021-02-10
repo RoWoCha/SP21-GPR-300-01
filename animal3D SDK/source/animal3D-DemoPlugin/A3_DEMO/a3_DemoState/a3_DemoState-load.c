@@ -653,7 +653,7 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 		a3demo_setUniformDefaultBlock(currentDemoProg, ubTransformMVP, 0);
 		a3demo_setUniformDefaultBlock(currentDemoProg, ubTransformMVPB, 1);
 
-		// ****TO-DO: 
+		// ****DONE: 
 		//	-> set lighting uniform and block handles and defaults
 		a3demo_setUniformDefaultVec4(currentDemoProg, uLightPos, a3vec4_one.v);
 		a3demo_setUniformDefaultFloat(currentDemoProg, uLightRadii, defaultFloat);

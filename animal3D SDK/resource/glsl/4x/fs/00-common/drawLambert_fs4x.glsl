@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> declare varyings to receive lighting and shading variables
 //	-> declare lighting uniforms
 //		(hint: in the render routine, consolidate lighting data 
@@ -34,6 +34,10 @@
 //		(hint: coefficient * attenuation * light color * surface color)
 //	-> implement for multiple lights
 //		(hint: there is another uniform for light count)
+
+// Resources used:
+// 1) Blue Book, p.668
+// 2) Lambertian reflectance article - https://www.learnopengles.com/tag/lambertian-reflectance/
 
 const int NUM_LIGHTS = 4;
 
@@ -47,7 +51,7 @@ uniform vec4 uLightPos[NUM_LIGHTS];
 uniform vec4 uLightColor[NUM_LIGHTS];
 uniform float uLightRadii[NUM_LIGHTS];
 
-uniform vec4 uColor; // camera space
+uniform vec4 uColor;
 uniform sampler2D uTex_dm;
 
 vec4 lambertShadingCalc(int lightNum);
@@ -57,13 +61,14 @@ void main()
 	// DUMMY OUTPUT: all fragments are OPAQUE LIME
 	//rtFragColor = vec4(0.5, 1.0, 0.0, 1.0);
 
-	vec4 color;
+	vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
+
 	for(int i = 0; i < NUM_LIGHTS; i++)
 	{
-		color += lambertShadingCalc(i);
+		color += vec4(vec3(lambertShadingCalc(i)), 0.0);
 	}
 
-	rtFragColor = texture(uTex_dm, vTexcoord) * color;
+	rtFragColor = color;
 	
 	// DEBUGGING
 	//rtFragColor = vec4(kd, kd, kd, 1.0);
@@ -78,10 +83,11 @@ vec4 lambertShadingCalc(int lightNum)
 
 	//diffuse coefficient:
 	float diffCoeff = max(0.0, dot(normal, lightVec));
+	vec4 diffuse_color = diffCoeff * texture(uTex_dm, vTexcoord);
 	
 	//adding attenuation
-	diffCoeff *= (1.0 / (1.0 + uLightRadii[lightNum] * distance * distance));
-	vec4 result = diffCoeff * uLightColor[lightNum] * uColor;
+	diffuse_color *= (1.0 / (uLightRadii[lightNum] * distance * distance + 1.0));
+	vec4 result = diffuse_color * uLightColor[lightNum] * uColor;
 
 	return result;
 }

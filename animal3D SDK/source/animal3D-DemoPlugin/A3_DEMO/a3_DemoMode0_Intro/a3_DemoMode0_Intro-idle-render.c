@@ -233,14 +233,8 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 	if (demoState->updateAnimation)
 		a3shaderUniformSendDouble(a3unif_single, currentDemoProgram->uTime, 1, &demoState->timer_display->totalTime);
 
-	// ****TO-DO: 
-	//	-> send lighting uniforms and bind blocks where appropriate
-	/*a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, 1, demoState->);
-	a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uLightRadii, 1, 0);
-	a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightColor, 1, rgba4[i].v);*/
-
-	
-
+	// ****DONE: 
+	//	-> send lighting uniforms and bind blocks where appropriate	
 	a3vec4 lightPos[introMaxCount_pointLight];
 	a3vec4 lightColor[introMaxCount_pointLight];
 	a3f32 lightRadii[introMaxCount_pointLight];
