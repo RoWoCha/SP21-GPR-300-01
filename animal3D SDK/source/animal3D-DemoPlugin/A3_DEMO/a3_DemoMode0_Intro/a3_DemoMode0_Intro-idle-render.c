@@ -235,6 +235,26 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 
 	// ****TO-DO: 
 	//	-> send lighting uniforms and bind blocks where appropriate
+	/*a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, 1, demoState->);
+	a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uLightRadii, 1, 0);
+	a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightColor, 1, rgba4[i].v);*/
+
+	
+
+	a3vec4 lightPos[introMaxCount_pointLight];
+	a3vec4 lightColor[introMaxCount_pointLight];
+	a3f32 lightRadii[introMaxCount_pointLight];
+
+	for (int i = 0; i < introMaxCount_pointLight; i++)
+	{
+		lightPos[i] = demoMode->pointLightData[i].position;
+		lightColor[i] = demoMode->pointLightData[i].color;
+		lightRadii[i] = demoMode->pointLightData[i].radiusInv;
+	}
+
+	a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, introMaxCount_pointLight, lightPos->v);
+	a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightColor, introMaxCount_pointLight, lightColor->v);
+	a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uLightRadii, introMaxCount_pointLight, lightRadii);
 
 
 	// select pipeline algorithm

@@ -35,25 +35,48 @@
 //	-> implement for multiple lights
 //		(hint: there is another uniform for light count)
 
+const int NUM_LIGHTS = 4;
+
 layout (location = 0) out vec4 rtFragColor;
 
 in vec4 vPosition;
 in vec4 vNormal;
 
-uniform vec4 uLightPos;  // camera space
+//uniform int uLightCount;
+uniform vec4 uLightPos[NUM_LIGHTS];
+uniform vec4 uLightColor[NUM_LIGHTS];
+uniform float uLightRadii[NUM_LIGHTS];
 
+uniform vec4 uColor; // camera space
+
+vec4 lambertShadingCalc(int lightNum)
+{
+	float distance = length(uLightPos[lightNum] - vPosition);
+	vec4 lightVec = normalize(uLightPos[lightNum] - vPosition);
+	vec4 normal = normalize(vNormal);
+
+	//diffuse coefficient:
+	float diffCoeff = max(0.0, dot(normal, lightVec));
+	
+	//adding attenuation
+	diffCoeff *= (1.0 / (1.0 + uLightRadii[lightNum] * distance * distance));
+	vec4 result = uColor * uLightColor[lightNum] * diffCoeff;
+
+	return result;
+}
 
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE LIME
 	//rtFragColor = vec4(0.5, 1.0, 0.0, 1.0);
 
-	//diffuse coefficient:
-	// dot produt of normal and light vector
-	vec4 N = normalize(vNormal);
-	vec4 L = normalize(uLightPos - vPosition);
-	float kd = dot(N, L);
+	vec4 color;
+	for(int i = 0; i < NUM_LIGHTS; i++)
+	{
+		color += lambertShadingCalc(i);
+	}
 
 	// DEBUGGING
-	rtFragColor = vec4(kd, kd, kd, 1.0);
+	rtFragColor = color;
+	//rtFragColor = vec4(kd, kd, kd, 1.0);
 }
