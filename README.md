@@ -3,7 +3,7 @@ animal3D SDK and related course frameworks for spring 2021.
 
 Repo for GPR-300-01: Intermediate Graphics and Animation class
 Uses animal3D SDK by Daniel Buckstein
-Project are done by Egor Fesenko
+Projects are done by Egor Fesenko
 
 1) Shaders implemented:
 - Solid Color
