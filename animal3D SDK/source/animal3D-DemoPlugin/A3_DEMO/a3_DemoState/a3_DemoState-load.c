@@ -350,8 +350,68 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 
 	// ****DONE: 
 	//	-> implement "startup" from tutorial
-	demoState->rendering_program = compile_shaders();
-	glCreateVertexArrays(1, demoState->vertex_array_object);
+
+	//Credit: Blue Book, Chapter 2
+
+	GLuint program;
+	GLuint vertex_shader;
+	GLuint fragment_shader;
+
+	// Source code for vertex shader
+	static const char* vertex_shader_source[] =
+	{
+		/*"#version 450 core                                 \n"
+		"                                                  \n"
+		"void main(void)                                   \n"
+		"{                                                 \n"
+		"	gl_Position = vec4(0.0, 0.0, 0.5, 1.0);        \n"
+		"}                                                 \n"*/
+
+		"#version 450 core                                                 \n"
+		"void main(void)                                                   \n"
+		"{                                                                 \n"
+		"	const vec4 vertices[3] = vec4[3](vec4(0.25, -0.25, 0.5, 1.0),  \n"
+		"	vec4(-0.25, -0.25, 0.5, 1.0),                                  \n"
+		"	vec4(0.25, 0.25, 0.5, 1.0));                                   \n"
+		"	gl_Position = vertices[gl_VertexID];                           \n"
+		"}                                                                 \n"
+	};
+
+	// Source code for fragment shader
+	static const char* fragment_shader_source[] =
+	{
+		"#version 450 core                                 \n"
+		"                                                  \n"
+		"out vec4 color;                                   \n"
+		"                                                  \n"
+		"void main(void)                                   \n"
+		"{                                                 \n"
+		"	color = vec4(0.0, 0.8, 1.0, 1.0);              \n"
+		"}                                                 \n"
+	};
+
+	// Create and compile vertex shader
+	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertex_shader, 1, vertex_shader_source, NULL);
+	glCompileShader(vertex_shader);
+
+	// Create and compile fragment shader
+	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);
+	glCompileShader(fragment_shader);
+
+	// Create program, attach shaders to it, and link it
+	program = glCreateProgram();
+	glAttachShader(program, vertex_shader);
+	glAttachShader(program, fragment_shader);
+	glLinkProgram(program);
+
+	// Delete the shaders as the program has them now
+	glDeleteShader(vertex_shader);
+	glDeleteShader(fragment_shader);
+
+	demoState->rendering_program = program;
+	glCreateVertexArrays(1, &demoState->vertex_array_object);
 	glBindVertexArray(demoState->vertex_array_object);
 }
 

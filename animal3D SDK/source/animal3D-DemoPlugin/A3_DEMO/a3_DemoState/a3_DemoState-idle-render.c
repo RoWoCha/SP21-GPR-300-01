@@ -200,18 +200,20 @@ void a3demo_renderTest(a3_DemoState const* demoState, a3f64 const dt)
 	// set viewport
 	glViewport(-demoState->frameBorder, -demoState->frameBorder, demoState->frameWidth, demoState->frameHeight);
 
-	// ****TO-DO: render scene here
+	// ****DONE: render scene here
 	//	-> implement "render" from tutorial
 	const float color[] = {
-		cosf((float)demoState->dt_timer_tot) * 0.5f + 0.5f,
 		sinf((float)demoState->dt_timer_tot) * 0.5f + 0.5f,
+		cosf((float)demoState->dt_timer_tot) * 0.5f + 0.5f,
 		0.0f, 1.0f
 	};
 	glClearBufferfv(GL_COLOR, 0, color);
 
-	//glUseProgram(demoState->rendering_program);
+	glUseProgram(demoState->rendering_program);
+	glPointSize(40.0f);
+	glDrawArrays(GL_POINTS, 0, 3);
+	//glDrawArrays(GL_TRIANGLES, 0, 3);
 
-	//glDrawArrays(GL_POINTS, 0, 1);
 }
 
 void a3demo_render(a3_DemoState const* demoState, a3f64 const dt)
