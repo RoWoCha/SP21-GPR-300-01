@@ -184,7 +184,7 @@ struct a3_DemoState
 	//-------------------------------------------------------------------------
 	// the end
 
-	// ****TO-DO: 
+	// ****DONE: 
 	//	-> add data members, the graphics handles from tutorial
 	a3ui32 rendering_program;
 	a3ui32 vertex_array_object;
