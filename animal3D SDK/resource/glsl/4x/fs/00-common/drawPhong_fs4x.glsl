@@ -33,6 +33,8 @@
 // Resources used:
 // Blue Book, p.668
 
+
+// !!!PER-FRAGMENT!!! //
 const int NUM_LIGHTS = 4;
 
 layout (location = 0) out vec4 rtFragColor;
@@ -94,3 +96,14 @@ vec4 phongShadingCalc(int lightNum)
 
 	return result;
 }
+
+
+// !!!PER-VERTEX!!! //
+/*layout (location = 0) out vec4 rtFragColor;
+
+in vec4 vColor;
+
+void main()
+{
+	rtFragColor = vColor;
+}*/
