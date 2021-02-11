@@ -30,6 +30,8 @@
 
 //-----------------------------------------------------------------------------
 
+// Contributions: Egor Fesenko
+
 #include "../a3_DemoState.h"
 
 #include <stdio.h>

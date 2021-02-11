@@ -22,6 +22,8 @@
 	Wrapper for shaders used in demo state.
 */
 
+// Contributions: Egor Fesenko
+
 #ifndef __ANIMAL3D_DEMOSHADERPROGRAM_H
 #define __ANIMAL3D_DEMOSHADERPROGRAM_H
 

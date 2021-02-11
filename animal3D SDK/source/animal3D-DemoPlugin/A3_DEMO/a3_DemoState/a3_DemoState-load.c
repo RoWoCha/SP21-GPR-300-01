@@ -28,6 +28,8 @@
 	****************************************************
 */
 
+// Contributions: Egor Fesenko
+
 #include "../_a3_demo_utilities/a3_DemoMacros.h"
 
 
@@ -547,7 +549,7 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawTangentBasis_gs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawColorAttrib_fs->shader);
 
-	// ****DONE?: 
+	// ****DONE: 
 	//	-> set up missing shader programs, using hints above: 
 	//		-> texturing, Lambert and Phong
 	// 00-common programs: 

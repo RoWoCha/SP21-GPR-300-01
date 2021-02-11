@@ -28,6 +28,8 @@
 
 //-----------------------------------------------------------------------------
 
+// Contributions: Egor Fesenko
+
 #include "../a3_DemoMode0_Intro.h"
 
 //typedef struct a3_DemoState a3_DemoState;
@@ -239,6 +241,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 	a3vec4 lightColor[introMaxCount_pointLight];
 	a3f32 lightRadii[introMaxCount_pointLight];
 
+	//Iterating through light data points and adding data to arrays
 	for (int i = 0; i < introMaxCount_pointLight; i++)
 	{
 		lightPos[i] = demoMode->pointLightData[i].position;
@@ -246,6 +249,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 		lightRadii[i] = demoMode->pointLightData[i].radiusInv;
 	}
 
+	//Sending arrays data to uniforms
 	a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightPos, introMaxCount_pointLight, lightPos->v);
 	a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uLightColor, introMaxCount_pointLight, lightColor->v);
 	a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uLightRadii, introMaxCount_pointLight, lightRadii);
@@ -283,7 +287,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 
 		case intro_renderModeTexture:
 			// activate diffuse map, fall through to solid color
-			// ****DONE???: 
+			// ****DONE 
 			//	-> activate diffuse texture on texture unit 0
 			a3textureActivate(texture_dm[j], a3tex_unit00);
 

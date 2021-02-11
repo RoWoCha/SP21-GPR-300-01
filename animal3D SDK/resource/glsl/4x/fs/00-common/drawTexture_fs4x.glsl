@@ -22,6 +22,8 @@
 	Output texture blended with color.
 */
 
+// Contributions: Egor Fesenko
+
 #version 450
 
 // ****DONE: 

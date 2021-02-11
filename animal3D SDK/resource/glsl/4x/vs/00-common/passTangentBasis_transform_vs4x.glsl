@@ -22,6 +22,8 @@
 	Calculate and pass tangent basis.
 */
 
+// Contributions: Egor Fesenko
+
 #version 450
 
 // ****DONE: 
@@ -102,6 +104,7 @@ void main()
 
 	vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
 
+	//Iterating through all light sources
 	for(int i = 0; i < NUM_LIGHTS; i++)
 	{
 		color += vec4(vec3(phongShadingCalc(i, position, normal)), 0.0);
@@ -113,6 +116,7 @@ void main()
 	vColor = color;
 }
 
+//Function for calculating color after Phong shading for one light source
 vec4 phongShadingCalc(int lightNum, vec4 position, vec4 normalCS)
 {
 	float distance = length(uLightPos[lightNum] - position);

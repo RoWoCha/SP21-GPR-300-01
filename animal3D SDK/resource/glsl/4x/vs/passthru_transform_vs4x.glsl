@@ -24,7 +24,7 @@
 
 #version 450
 
-
+// Contributions: Egor Fesenko
 
 // ****DONE: 
 //	-> declare model-view-projection matrix uniform
@@ -42,7 +42,7 @@ void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
 	//gl_Position = aPosition;
-	gl_Position = uMVP * aPosition;
+	gl_Position = uMVP * aPosition;  //screen space
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;

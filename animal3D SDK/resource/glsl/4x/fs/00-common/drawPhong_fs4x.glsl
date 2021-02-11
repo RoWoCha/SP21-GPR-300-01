@@ -22,6 +22,8 @@
 	Output Phong shading.
 */
 
+// Contributions: Egor Fesenko
+
 #version 450
 
 // ****DONE: 
@@ -60,6 +62,7 @@ void main()
 
 	vec4 color;
 
+	//Iterating through light sources
 	for(int i = 0; i < NUM_LIGHTS; i++)
 	{
 		color += vec4(vec3(phongShadingCalc(i)), 0.0);

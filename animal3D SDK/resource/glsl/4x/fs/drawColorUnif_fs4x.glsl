@@ -22,6 +22,8 @@
 	Draw uniform solid color.
 */
 
+// Contributions: Egor Fesenko
+
 #version 450
 
 // ****DONE: 
