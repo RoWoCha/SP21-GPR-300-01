@@ -230,14 +230,24 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 		1,
 	};
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment FBO target array
 	//	-> add pointer to target FBO for each pass
 	//		(hint: choose the most relevant one for each; all are unique)
 	// framebuffer target for each pass
 	const a3_Framebuffer* writeFBO[postproc_renderPass_max] = {
-		demoState->fbo_d32,
-		//...
+		demoState->fbo_d32,							// Shadow
+		demoState->fbo_c16x4_d24s8,					// Scene Render
+		demoState->fbo_c16_szHalf + 0,				// Bright Half
+		demoState->fbo_c16_szHalf + 1,				// Blur Half - H
+		demoState->fbo_c16_szHalf + 2,				// Blur Half - V
+		demoState->fbo_c16_szQuarter + 0,			// Bright Quarter
+		demoState->fbo_c16_szQuarter + 1,			// Blur Quarter - H
+		demoState->fbo_c16_szQuarter + 2,			// Blur Quarter - V
+		demoState->fbo_c16_szEighth + 0,			// Bright Eighth
+		demoState->fbo_c16_szEighth + 1,			// Blur Eighth - H
+		demoState->fbo_c16_szEighth + 2,			// Blur Eighth - V
+		demoState->fbo_c16x4,						// Final Composite
 	};
 
 	// target info
@@ -261,7 +271,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	};
 
 	// pixel size and effect axis
-	//a3vec2 pixelSize = a3vec2_one;
+	a3vec2 pixelSize = a3vec2_one;
 
 
 	//-------------------------------------------------------------------------
@@ -359,18 +369,22 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	// select pipeline algorithm
 	glDisable(GL_BLEND);
 
+	// ****DONE:
+	//	-> uncomment shadow map bind
+	a3framebufferBindDepthTexture(writeFBO[postproc_renderPassShadow], a3tex_unit06); //demoState->fbo_d32
+
 	// forward shading algorithms
 	for (currentSceneObject = demoMode->obj_sphere, endSceneObject = demoMode->obj_ground;
 		currentSceneObject <= endSceneObject; ++currentSceneObject)
 	{
 		j = currentSceneObject->sceneHierarchyIndex;
-		
+
 		// activate texture maps
 		a3textureActivate(texture_dm[j], a3tex_unit00);
 		a3textureActivate(texture_sm[j], a3tex_unit01);
-		// ****DONE:
-		//	-> uncomment shadow map bind
-		a3framebufferBindDepthTexture(writeFBO[postproc_renderPassShadow], a3tex_unit06); //demoState->fbo_d32
+		//// ****DONE:
+		////	-> uncomment shadow map bind
+		//a3framebufferBindDepthTexture(writeFBO[postproc_renderPassShadow], a3tex_unit06); //demoState->fbo_d32
 
 		// send other data
 		a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uIndex, 1, &j);
@@ -408,17 +422,105 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	//		-> blur in other direction (e.g. vertical)
 	//	-> composite original scene result with final blur iteration results
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment first post-processing pass
 	//	-> implement bloom pipeline following the above algorithm
 	//		(hint: this is the entirety of the first bright pass)
+	// Bright Half
 	currentDemoProgram = demoState->prog_postBright;
 	a3shaderProgramActivate(currentDemoProgram->program);
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
 	currentWriteFBO = writeFBO[postproc_renderPassBright2];
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
-	//...
+
+	// Blur Half - H
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 1.0f / (float)currentWriteFBO->frameWidth;
+	pixelSize.y = 0.0f;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurH2];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	// Blur Half - V
+	pixelSize.x = 0.0f;
+	pixelSize.y = 1 / (float)currentWriteFBO->frameHeight;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurV2];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	// Bright Quarter
+	currentDemoProgram = demoState->prog_postBright;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBright4];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	// Blur Quarter - H
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 1.0f / (float)currentWriteFBO->frameWidth;
+	pixelSize.y = 0.0f;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurH4];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	// Blur Quarter - V
+	pixelSize.x = 0.0f;
+	pixelSize.y = 1 / (float)currentWriteFBO->frameHeight;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurV4];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	// Bright Eighth
+	currentDemoProgram = demoState->prog_postBright;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBright8];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	// Blur Eighth - H
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 1.0f / (float)currentWriteFBO->frameWidth;
+	pixelSize.y = 0.0f;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurH8];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	// Blur Eighth - V
+	pixelSize.x = 0.0f;
+	pixelSize.y = 1 / (float)currentWriteFBO->frameHeight;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurV8];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	// Final Composite
+	// Final pass: activate color from scene and the 3 blur results (vertical)
+	currentDemoProgram = demoState->prog_postBlend;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassScene], a3tex_unit00, 0);
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassBlurV2], a3tex_unit01, 0);
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassBlurV4], a3tex_unit02, 0);
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassBlurV8], a3tex_unit03, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassDisplay];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
 
 
 	//-------------------------------------------------------------------------
