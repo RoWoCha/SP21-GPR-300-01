@@ -22,18 +22,20 @@
 	Calculate and pass tangent basis, and shadow coordinate.
 */
 
+// Modified by Egor Fesenko
+
 #version 450
 
-// ****TO-DO:
+// ****DONE:
 // 1) core transformation and lighting setup:
 //	-> declare data structures for projector and model matrix stacks +
 //		(hint: copy and slightly modify demo object descriptors)
 //	-> declare uniform block for matrix data +
 //		(hint: must match how it is uploaded in update function)
-//	-> use matrix data for current object to perform relevant transformations
+//	-> use matrix data for current object to perform relevant transformations +
 //		(hint: model-view-projection sequence may be split up like last time, 
 //		but per usual the final clip-space result is assigned to gl_Position)
-//	-> declare relevant attributes for lighting +
+//	-> declare relevant attributes for lighting
 //	-> perform any additional transformations and write varyings for lighting
 // 2) shadow mapping
 //	-> using the above setup, perform additional transformation to generate a 
@@ -98,9 +100,9 @@ void main()
 	// DUMMY OUTPUT: directly assign input position to output position
 	//gl_Position = aPosition;
 	gl_Position = uCameraMatrixStack.projectionMat *
-			uModelMatrixStack[uIndex].modelViewMat * aPosition;
+			uModelMatrixStack[uIndex].modelViewMat * aPosition; // clip-space
 
-	vPosition = uModelMatrixStack[uIndex].modelViewMat * aPosition;
+	vPosition = uModelMatrixStack[uIndex].modelViewMat * aPosition; // camera-space
 	vNormal = normalize(uModelMatrixStack[uIndex].modelViewMat * vec4(aNormal, 1.0));
 
 	vTexcoord = aTexcoord;

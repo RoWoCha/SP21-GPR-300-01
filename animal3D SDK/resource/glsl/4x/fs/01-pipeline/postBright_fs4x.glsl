@@ -22,9 +22,12 @@
 	Bright pass filter.
 */
 
+// Modified by Egor Fesenko
+// Info sources: Blue Book ("Making Your Scene Bloom" pp.483-490)
+
 #version 450
 
-// ****TO-DO:
+// ****DONE:
 //	-> declare texture coordinate varying and input texture
 //	-> implement relative luminance function
 //	-> implement simple "tone mapping" such that the brightest areas of the 
@@ -35,9 +38,9 @@ layout (location = 0) out vec4 rtFragColor;
 in vec2 vTexcoord;
 
 uniform sampler2D uTex_dm;
-uniform vec2 uAxis;
-uniform float bloom_thresh_min = 0.35;
-uniform float bloom_thresh_max = 1.2;
+
+uniform float bloom_thresh_min = 0.65;
+uniform float bloom_thresh_max = 1.0;
 
 void main()
 {
@@ -45,9 +48,9 @@ void main()
 	vec3 color = vec3(texture(uTex_dm, vTexcoord));
 
 	// Calculate luminance
-	float Y = dot(color, vec3(0.299, 0.587, 0.144));
+	float Y = dot(color, vec3(0.25, 0.41, 0.095));
 	
-	color *= 4.0 * smoothstep(bloom_thresh_min, bloom_thresh_max, Y);
+	color *= 1.3 * smoothstep(bloom_thresh_min, bloom_thresh_max, Y);
 
 	rtFragColor = vec4(color, 1.0);
 

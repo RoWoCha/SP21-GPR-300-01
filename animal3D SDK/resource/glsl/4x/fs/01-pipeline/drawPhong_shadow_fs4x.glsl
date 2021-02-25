@@ -22,9 +22,11 @@
 	Output Phong shading with shadow mapping.
 */
 
+// Modified by Egor Fesenko
+
 #version 450
 
-// ****TO-DO:
+// ****DONE:
 // 1) Phong shading
 //	-> identical to outcome of last project
 // 2) shadow mapping
@@ -34,6 +36,7 @@
 //	-> perform "shadow test" (explained in class)
 
 // Info sources: Blue Book ("Casting Shadows" pp.648-654)
+// Shadow test based on: https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
 // Phong shader taken from https://github.com/RoWoCha/SP21-GPR-300-01/blob/project1_egor/animal3D%20SDK/resource/glsl/4x/fs/00-common/drawPhong_fs4x.glsl
 
 layout (location = 0) out vec4 rtFragColor;
@@ -79,7 +82,13 @@ void main()
 		color += vec4(vec3(phongShadingCalc(i)), 0.0);
 	}
 
-	rtFragColor = textureProj(uTex_shadow, vShadowCoord) * color;	
+	// Shadow Test taken from: https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
+	vec4 projCoords = vShadowCoord / vShadowCoord.w;
+	vec4 shadow = texture(uTex_shadow, projCoords.xy);
+	float closestDepth = shadow.x;
+	float shadowTest = projCoords.z > closestDepth + 0.00001 ? 0.2 : 1.0;
+
+	rtFragColor = vec4(shadowTest) * color;	
 }
 
 //Function for calculation of Phong shading from one light source
@@ -98,11 +107,11 @@ vec4 phongShadingCalc(int lightNum)
 
 	//specular (Phong) coefficient
 	float specCoeff = max(0.0, dot(viewVec, reflectionVec));
-	specCoeff *= specCoeff;
+	specCoeff = pow(specCoeff, 2.0);
 	vec4 specular_color = specCoeff * texture(uTex_sm, vTexcoord);
 
 	//adding attenuation
-	vec4 resCoeff = (diffuse_color + specular_color) * (2.5 / (uPointLightData[lightNum].radiusInv * distance * distance + 1.0));
+	vec4 resCoeff = (diffuse_color + specular_color) * (2.75 / (uPointLightData[lightNum].radiusInv * distance * distance + 1.0));
 	vec4 result = resCoeff * uPointLightData[lightNum].color * uColor;
 
 	return result;

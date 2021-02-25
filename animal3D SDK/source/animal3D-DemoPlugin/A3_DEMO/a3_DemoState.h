@@ -26,6 +26,8 @@
 	********************************************
 */
 
+// Modified by Egor Fesenko
+
 #ifndef __ANIMAL3D_DEMOSTATE_H
 #define __ANIMAL3D_DEMOSTATE_H
 

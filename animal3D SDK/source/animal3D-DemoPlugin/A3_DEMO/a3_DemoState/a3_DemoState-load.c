@@ -28,6 +28,8 @@
 	****************************************************
 */
 
+// Modified by Egor Fesenko
+
 #include "../_a3_demo_utilities/a3_DemoMacros.h"
 
 

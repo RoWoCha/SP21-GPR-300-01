@@ -22,11 +22,12 @@
 	Gaussian blur.
 */
 
+// Modified by Egor Fesenko
 // Info sources: Blue Book ("Making Your Scene Bloom" pp.483-490)
 
 #version 450
 
-// ****TO-DO:
+// ****DONE:
 //	-> declare texture coordinate varying and input texture
 //	-> declare sampling axis uniform (see render code for clue)
 //	-> declare Gaussian blur function that samples along one axis
@@ -76,11 +77,10 @@ void main()
 
     vec4 color = vec4(0.0);
 
-    ivec2 P = ivec2(gl_FragCoord.xy) - ivec2(0, weights.length() - 1);
-
     for (int i = 0; i < weights.length(); i++)
     {
-        color += texelFetch(uTex_dm, P + ivec2(0, i), 0) * weights[i];
+        color += texture2D(uTex_dm, vTexcoord + i / 5.0f * uAxis) * weights[i];
+        color += texture2D(uTex_dm, vTexcoord - i / 5.0f * uAxis) * weights[i];
     }
     rtFragColor = color;
 }

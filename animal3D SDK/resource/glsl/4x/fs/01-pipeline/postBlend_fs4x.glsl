@@ -22,26 +22,29 @@
 	Blending layers, composition.
 */
 
-// Info sources: Blue Book ("Making Your Scene Bloom" pp.483-490)
+// Modified by Egor Fesenko
 
 #version 450
 
-// ****TO-DO:
+// ****DONE:
 //	-> declare texture coordinate varying and set of input textures
 //	-> implement some sort of blending algorithm that highlights bright areas
 //		(hint: research some Photoshop blend modes)
 
 layout (location = 0) out vec4 rtFragColor;
 
-uniform sampler2D uTex_dm;
 uniform sampler2D uImage00, uImage01, uImage02, uImage03;
 
 in vec2 vTexcoord;
 
 void main()
 {
-	// DUMMY OUTPUT: all fragments are OPAQUE PURPLE
-	//rtFragColor = vec4(0.5, 0.0, 1.0, 1.0);
+	vec3 res0 = texture(uImage00, vTexcoord).rgb;
+	vec3 res1 = texture(uImage01, vTexcoord).rgb;
+	vec3 res2 = texture(uImage02, vTexcoord).rgb;
+	vec3 res3 = texture(uImage03, vTexcoord).rgb;
 
-	rtFragColor = texture(uTex_dm, vTexcoord);
+	vec3 color = res0 + res1 + res2 + res3;
+
+	rtFragColor = vec4(color, 1.0);
 }

@@ -22,6 +22,8 @@
 	Output texture blended with color.
 */
 
+// Modified by Egor Fesenko
+
 #version 450
 
 in vec2 vTexcoord;

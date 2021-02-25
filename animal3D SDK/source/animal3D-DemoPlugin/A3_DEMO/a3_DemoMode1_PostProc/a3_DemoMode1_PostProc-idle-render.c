@@ -26,6 +26,8 @@
 	********************************************
 */
 
+// Modified by Egor Fesenko
+
 //-----------------------------------------------------------------------------
 
 #include "../a3_DemoMode1_PostProc.h"
@@ -447,7 +449,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 
 	// Blur Half - V
 	pixelSize.x = 0.0f;
-	pixelSize.y = 1 / (float)currentWriteFBO->frameHeight;
+	pixelSize.y = 1.0f / (float)currentWriteFBO->frameHeight;
 	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
 	currentWriteFBO = writeFBO[postproc_renderPassBlurV2];
@@ -475,7 +477,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 
 	// Blur Quarter - V
 	pixelSize.x = 0.0f;
-	pixelSize.y = 1 / (float)currentWriteFBO->frameHeight;
+	pixelSize.y = 1.0f / (float)currentWriteFBO->frameHeight;
 	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
 	currentWriteFBO = writeFBO[postproc_renderPassBlurV4];
@@ -503,7 +505,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 
 	// Blur Eighth - V
 	pixelSize.x = 0.0f;
-	pixelSize.y = 1 / (float)currentWriteFBO->frameHeight;
+	pixelSize.y = 1.0f / (float)currentWriteFBO->frameHeight;
 	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
 	currentWriteFBO = writeFBO[postproc_renderPassBlurV8];
