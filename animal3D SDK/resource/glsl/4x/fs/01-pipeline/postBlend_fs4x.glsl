@@ -39,6 +39,7 @@ in vec2 vTexcoord;
 
 void main()
 {
+	// summing up all bright+blur passes
 	vec3 res0 = texture(uImage00, vTexcoord).rgb;
 	vec3 res1 = texture(uImage01, vTexcoord).rgb;
 	vec3 res2 = texture(uImage02, vTexcoord).rgb;

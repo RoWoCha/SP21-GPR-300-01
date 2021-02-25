@@ -77,6 +77,7 @@ void main()
 
     vec4 color = vec4(0.0);
 
+    //Summing color for points nearby
     for (int i = 0; i < weights.length(); i++)
     {
         color += texture2D(uTex_dm, vTexcoord + i / 5.0f * uAxis) * weights[i];
