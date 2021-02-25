@@ -32,8 +32,33 @@
 
 layout (location = 0) out vec4 rtFragColor;
 
+in vec2 vTexcoord;
+
+uniform sampler2D uTex_dm;
+uniform vec2 uAxis;
+uniform float bloom_thresh_min = 0.35;
+uniform float bloom_thresh_max = 1.2;
+
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE ORANGE
-	rtFragColor = vec4(1.0, 0.5, 0.0, 1.0);
+	vec3 color = vec3(texture(uTex_dm, vTexcoord));
+
+	// Calculate luminance
+	float Y = dot(color, vec3(0.299, 0.587, 0.144));
+	
+	color *= 4.0 * smoothstep(bloom_thresh_min, bloom_thresh_max, Y);
+
+	rtFragColor = vec4(color, 1.0);
+
+	//float Y = dot(vec3(color), vec3(0.299, 0.587, 0.144));
+	//color *= 4.0 * smoothstep(bloom_thresh_min, bloom_thresh_max, Y);
+	//rtFragColor = color;
+
+//	if(luminance > 1.0)
+//        rtFragColor = vec4(color0.rgb, 1.0);
+//    else
+//        rtFragColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+    //rtFragColor = vec4(1.0, 0.5, 0.0, 1.0);
 }

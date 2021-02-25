@@ -24,10 +24,18 @@
 
 #version 450
 
+in vec2 vTexcoord;
+
 layout (location = 0) out vec4 rtFragColor;
+
+uniform sampler2D uTex_dm;
+uniform vec4 uColor;
 
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE YELLOW
-	rtFragColor = vec4(1.0, 1.0, 0.0, 1.0);
+	//rtFragColor = vec4(1.0, 1.0, 0.0, 1.0);
+
+	vec4 color = texture(uTex_dm, vTexcoord) * uColor;
+	rtFragColor = color;
 }

@@ -102,7 +102,7 @@ vec4 phongShadingCalc(int lightNum)
 	vec4 specular_color = specCoeff * texture(uTex_sm, vTexcoord);
 
 	//adding attenuation
-	vec4 resCoeff = (diffuse_color + specular_color) * (2.0 / (uPointLightData[lightNum].radiusInv * distance * distance + 1.0));
+	vec4 resCoeff = (diffuse_color + specular_color) * (2.5 / (uPointLightData[lightNum].radiusInv * distance * distance + 1.0));
 	vec4 result = resCoeff * uPointLightData[lightNum].color * uColor;
 
 	return result;
