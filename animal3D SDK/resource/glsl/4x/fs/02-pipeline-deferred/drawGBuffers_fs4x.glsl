@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO:
+// ****DONE:
 //	-> declare view-space varyings from vertex shader
 //	-> declare MRT for pertinent surface data (incoming attribute info)
 //		(hint: at least normal and texcoord are needed)
@@ -37,7 +37,9 @@ in vec4 vNormal;
 in vec4 vTexcoord;
 
 in vec4 vPosition_screen;
+in mat3 vTBN;
 
+uniform sampler2D uTex_nm;
 
 //layout (location = 0) out vec4 rtFragColor;
 layout (location = 0) out vec4 rtTexcoord;
@@ -48,8 +50,14 @@ void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
 	//rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
+
 	rtTexcoord = vTexcoord;
-	rtNormal = vec4((normalize(vNormal.xyz) + 1.0) * 0.5, 1.0);
+
+	//rtNormal = vec4((normalize(vNormal.xyz) + 1.0) * 0.5, 1.0);
+	vec3 normalNM = (texture(uTex_nm, vTexcoord.xy).xyz - 0.5) * 2.0;
+	vec4 finalNormal = vec4(vTBN * normalNM, 0.0);
+	finalNormal = (finalNormal + 1.0) * 0.5;
+
 	//rtPosition = vPosition;
 	rtPosition = vPosition_screen / vPosition_screen.w;
 }

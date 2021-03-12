@@ -26,7 +26,7 @@
 
 #define MAX_OBJECTS 128
 
-// ****TO-DO:
+// ****DONE:
 //	-> declare attributes related to lighting *DONE
 //		(hint: normal [2], texcoord [8], tangent [10], bitangent [11])
 //	-> declare view-space varyings related to lighting *DONE
@@ -38,7 +38,7 @@
 layout (location = 0) in vec4 aPosition;
 layout (location = 2) in vec3 aNormal;
 layout (location = 8) in vec4 aTexcoord;
-layout (location = 10) in vec4 aTangent;
+layout (location = 10) in vec3 aTangent;
 layout (location = 11) in vec4 aBitangent;
 
 struct sModelMatrixStack
@@ -65,8 +65,9 @@ flat out int vInstanceID;
 out vec4 vPosition;
 out vec4 vNormal;
 out vec4 vTexcoord;
-out vec4 vTangent;
+out vec3 vTangent;
 out vec4 vBitangent;
+out mat3 vTBN;
 
 out vec4 vPosition_screen;
 
@@ -88,26 +89,29 @@ void main()
 	vNormal = uModelMatrixStack[uIndex].modelViewMatInverseTranspose * vec4(aNormal, 0.0);
 	vTexcoord = uModelMatrixStack[uIndex].atlasMat * aTexcoord;
 
+	vTangent = normalize(vec3(uModelMatrixStack[uIndex].modelViewMatInverseTranspose * vec4(aTangent, 0.0)));
+	vBitangent = normalize(uModelMatrixStack[uIndex].modelViewMatInverseTranspose * aBitangent);
+
+	vTBN = mat3(vTangent, vec3(vBitangent), normalize(vNormal));
+
 	/*
 	// Blue Book {
 	// Calculate normal (N) and tangent (T) vectors in view space from
 	// incoming object space vectors.
-	vec3 N = normalize(vec3(uModelMatrixStack[uIndex].modelViewMatInverseTranspose * vec4(aNormal, 0.0)));
-	vec3 T = normalize(vec3(uModelMatrixStack[uIndex].modelViewMatInverseTranspose * aTangent));
+	vec3 N = normalize(mat3(mv_matrix) * normal);
+	vec3 T = normalize(mat3(mv_matrix) * tangent);
 	// Calculate the bitangent vector (B) from the normal and tangent
 	// vectors.
-	//vec3 B = cross(N, T);
-	vec3 B = normalize(vec3(uModelMatrixStack[uIndex].modelViewMatInverseTranspose * aBitangent));
+	vec3 B = cross(N, T);
 	// The light vector (L) is the vector from the point of interest to
 	// the light. Calculate that and multiply it by the TBN matrix.
-	//vec3 L = light_pos - P.xyz;
-	//vs_out.lightDir = normalize(vec3(dot(V, T), dot(V, B), dot(V, N)));
+	vec3 L = light_pos - P.xyz;
+	vs_out.lightDir = normalize(vec3(dot(V, T), dot(V, B), dot(V, N))); // multiplication by vTBN
 	// The view vector is the vector from the point of interest to the
 	// viewer, which in view space is simply the negative of the position.
 	// Calculate that and multiply it by the TBN matrix.
-	//vec3 V = -P.xyz;
-	//vs_out.eyeDir = normalize(vec3(dot(V, T), dot(V, B), dot(V, N)));
-
+	vec3 V = -P.xyz;
+	vs_out.eyeDir = normalize(vec3(dot(V, T), dot(V, B), dot(V, N)));
 	// } Blue Book
 	*/
 
