@@ -26,7 +26,7 @@
 
 #define MAX_LIGHTS 1024
 
-// ****TO-DO:
+// ****DONE:
 //	-> this one is pretty similar to the forward shading algorithm (Phong NM) 
 //		except it happens on a plane, given images of the scene's geometric 
 //		data (the "g-buffers"); all of the information about the scene comes 
@@ -53,12 +53,45 @@ uniform sampler2D uImage07; // scene depth
 
 uniform mat4 upB_inv;		// Inverse bias-projection
 
+// simple point light
+struct sPointLightData
+{
+	vec4 position;					// position in rendering target space
+	vec4 worldPos;					// original position in world space
+	vec4 color;						// RGB color with padding
+	float radius;					// radius (distance of effect from center)
+	float radiusSq;					// radius squared (if needed)
+	float radiusInv;				// radius inverse (attenuation factor)
+	float radiusInvSq;				// radius inverse squared (attenuation factor)
+};
+
+uniform ubLight
+{
+	sPointLightData uPointLightData[MAX_LIGHTS];
+};
 
 //testing
 //uniform sampler2D uImage02; // normals
 //uniform sampler2D uImage03; // height map
 
 layout (location = 0) out vec4 rtFragColor;
+
+// declaration of Phong shading model
+//	(implementation in "utilCommon_fs4x.glsl")
+//		param diffuseColor: resulting diffuse color (function writes value)
+//		param specularColor: resulting specular color (function writes value)
+//		param eyeVec: unit direction from surface to eye
+//		param fragPos: location of fragment in target space
+//		param fragNrm: unit normal vector at fragment in target space
+//		param fragColor: solid surface color at fragment or of object
+//		param lightPos: location of light in target space
+//		param lightRadiusInfo: description of light size from struct
+//		param lightColor: solid light color
+void calcPhongPoint(
+	out vec4 diffuseColor, out vec4 specularColor,
+	in vec4 eyeVec, in vec4 fragPos, in vec4 fragNrm, in vec4 fragColor,
+	in vec4 lightPos, in vec4 lightRadiusInfo, in vec4 lightColor
+);
 
 void main()
 {
@@ -98,6 +131,27 @@ void main()
 	vec4 normal_view = texture(uImage05, vTexcoord_atlas.xy);
 	normal_view = normal_view * 2.0 - 1.0;
 
+	vec4 diffuseColor = vec4(0.0);
+	vec4 specularColor = vec4(0.0);
+	vec4 diffuseSum = vec4(0.0);
+	vec4 specularSum = vec4(0.0);
+	vec4 lightRadiusInfo = vec4(0.0);
+
+	for(int i = 0; i < uCount; i++)
+	{
+		lightRadiusInfo = vec4(uPointLightData[i].radius, uPointLightData[i].radiusSq,
+						uPointLightData[i].radiusInv, uPointLightData[i].radiusInvSq);
+
+		calcPhongPoint(diffuseColor, specularColor,
+		-normalize(position_view), position_view, normal_view, diffuseSample,
+		uPointLightData[i].position, lightRadiusInfo, uPointLightData[i].color);
+
+		diffuseSum += diffuseColor;
+		specularSum += specularColor;
+	}
+
+	rtFragColor = vec4(diffuseSum.xyz + specularSum.xyz, 1.0);
+
 	//DEBUGGING
 	//rtFragColor = vTexcoord_atlas;
 	//rtFragColor = texture(uImage00, vTexcoord_atlas.xy);
@@ -105,9 +159,8 @@ void main()
 	//rtFragColor = texture(uImage06, vTexcoord_atlas.xy);
 	//rtFragColor = diffuseSample;
 	//rtFragColor = position_screen;
-	rtFragColor = normal_view;
+	//rtFragColor = normal_view;
 	
-
 	//transparency
 	rtFragColor.a = diffuseSample.a;
 }

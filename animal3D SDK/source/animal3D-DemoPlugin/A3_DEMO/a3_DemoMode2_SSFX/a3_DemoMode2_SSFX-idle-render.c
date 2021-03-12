@@ -319,30 +319,38 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 
 	if (renderMode == ssfx_renderModePhongDL)
 	{
-		// ****TO-DO:
-		//	-> uncomment deferred shading program and diffuse texture activations
-		//	-> activate pertinent textures for deferred lighting composition
+		// ****DONE:
+		//	-> uncomment deferred shading program and diffuse texture activations +
+		//	-> activate pertinent textures for deferred lighting composition +
 		//		(hint: all outputs from previous passes)
-		//	-> activate and send pertinent uniform blocks and values
+		//	-> activate and send pertinent uniform blocks and values +
 		//		(hint: light buffer, light transforms, inverse bias-projection)
 		//		(hint: inverse bias-projection variable is commented out above)
-	/*	// draw light volumes
+		// draw light volumes
 		currentDemoProgram = demoState->prog_drawPhongPointLight_instanced;
 		a3shaderProgramActivate(currentDemoProgram->program);
-		//...*/
+		
+		//pertinent textures for deferred lighting composition
+		a3textureActivate(demoState->tex_atlas_dm, a3tex_unit00);
+		a3textureActivate(demoState->tex_atlas_sm, a3tex_unit01);
+		a3textureActivate(demoState->tex_atlas_nm, a3tex_unit02);
+
+		//activating ub-s and sending values
+		a3shaderUniformBufferActivate(demoState->ubo_light, demoProg_blockLight); //light buffer
+		a3shaderUniformBufferActivate(demoState->ubo_mvp, demoProg_blockTransformStack); //light transforms
+		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uPB_inv, 1, projectionBiasMatInv.mm); //inverse bias-projection
 
 		currentWriteFBO = writeFBO[ssfx_renderPassLights];
 		a3framebufferActivate(currentWriteFBO);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// ****TO-DO:
+		// ****DONE:
 		//	-> draw many inverted instances of the unit sphere model (because 
 		//		point lights are spheres), and using additive blending
 		currentDemoProgram = demoState->prog_drawPhongPointLight_instanced;
 		a3shaderProgramActivate(currentDemoProgram->program);
-		//...
+		
 		a3vertexDrawableActivateAndRenderInstanced(demoState->draw_unit_sphere, ssfxMaxCount_pointLight);
-		//...
 	}
 
 
@@ -381,36 +389,51 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor, 1, a3vec4_one.v);
 		break;
 	case ssfx_renderModePhongDS:
-		// ****TO-DO:
-		//	-> uncomment deferred shading program and diffuse texture activations
-		//	-> activate pertinent textures for deferred lighting composition
+		// ****DONE:
+		//	-> uncomment deferred shading program and diffuse texture activations +
+		//	-> activate pertinent textures for deferred lighting composition +
 		//		(hint: all outputs from previous passes)
-		//	-> activate and send pertinent uniform blocks and values
-		//		(hint: light buffer, light count, inverse bias-projection)
+		//	-> activate and send pertinent uniform blocks and values +
+		//		(hint: light buffer, light count, inverse bias-projection) [+ light transforms]
 		// deferred shading
 		//	- similar to light pre-pass but all at once on FSQ
 		currentDemoProgram = demoState->prog_postDeferredShading;
 		a3shaderProgramActivate(currentDemoProgram->program);
+
 		a3textureActivate(demoState->tex_atlas_dm, a3tex_unit00); // diffuse texture atlas
+		a3textureActivate(demoState->tex_atlas_sm, a3tex_unit01); // specular texture atlas
+		a3textureActivate(demoState->tex_atlas_nm, a3tex_unit02); // normal texture atlas
+
 		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit04, 0); // texcoords
 		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit05, 1); // normals
 		//a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit06, 3); // positions
 		a3framebufferBindDepthTexture(demoState->fbo_c16x4_d24s8, a3tex_unit07);    // depth
-		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uPB_inv, 1, projectionBiasMatInv.mm);
+
+		//activating ub-s and sending values
+		a3shaderUniformBufferActivate(demoState->ubo_light, demoProg_blockLight); //light buffer
+		a3shaderUniformBufferActivate(demoState->ubo_transform, demoProg_blockTransformStack); //light transforms
+		a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uCount, 1, renderModeLightCount + renderMode); //light count
+		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uPB_inv, 1, projectionBiasMatInv.mm); //inverse bias-projection
 
 		//...
 		break;
 	case ssfx_renderModePhongDL:
-		// ****TO-DO:
-		//	-> uncomment deferred lighting composite program and diffuse texture activations
-		//	-> activate pertinent textures for deferred lighting composition
+		// ****DONE:
+		//	-> uncomment deferred lighting composite program and diffuse texture activations +
+		//	-> activate pertinent textures for deferred lighting composition +
 		//		(hint: all outputs from previous passes)
-	/*	// deferred lighting composite
+		// deferred lighting composite
 		//	- simple composition: multiply lighting colors by respective texture sample
 		currentDemoProgram = demoState->prog_postDeferredLightingComposite;
 		a3shaderProgramActivate(currentDemoProgram->program);
+
 		a3textureActivate(demoState->tex_atlas_dm, a3tex_unit00); // diffuse texture atlas
-		//...*/
+		a3textureActivate(demoState->tex_atlas_sm, a3tex_unit01); // specular texture atlas
+
+		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit04, 0); // texcoords
+		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit05, 1); // normals
+		//a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit06, 3); // positions
+		a3framebufferBindDepthTexture(demoState->fbo_c16x4_d24s8, a3tex_unit07);    // depth
 		break;
 	}
 

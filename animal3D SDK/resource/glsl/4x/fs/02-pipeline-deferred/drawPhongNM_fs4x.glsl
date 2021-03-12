@@ -56,7 +56,7 @@ struct sPointLightData
 
 uniform ubLight
 {
-	sPointLightData uPointLightData[4];
+	sPointLightData uPointLightData[MAX_LIGHTS];
 };
 
 layout (location = 0) out vec4 rtFragColor;
