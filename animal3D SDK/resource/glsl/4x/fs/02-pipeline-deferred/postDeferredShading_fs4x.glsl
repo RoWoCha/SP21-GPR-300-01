@@ -51,6 +51,8 @@ uniform sampler2D uImage05; // scene normal
 uniform sampler2D uImage06; // scene position
 uniform sampler2D uImage07; // scene depth
 
+uniform mat4 upB_inv;		// Inverse bias-projection
+
 
 //testing
 //uniform sampler2D uImage02; // normals
@@ -87,11 +89,25 @@ void main()
 	vec4 diffuseSample = texture(uImage00, sceneTexcoord.xy);
 	vec4 specularSample = texture(uImage01, sceneTexcoord.xy);
 	
+	vec4 position_screen = vTexcoord_atlas;
+	position_screen.z = texture(uImage07, vTexcoord_atlas.xy).r;
 	
+	vec4 position_view = upB_inv * position_screen;
+	position_view /= position_view.w;
+
+	vec4 normal_view = texture(uImage05, vTexcoord_atlas.xy);
+	normal_view = normal_view * 2.0 - 1.0;
+
 	//DEBUGGING
 	//rtFragColor = vTexcoord_atlas;
 	//rtFragColor = texture(uImage00, vTexcoord_atlas.xy);
 	//rtFragColor = texture(uImage07, vTexcoord_atlas.xy);
-	rtFragColor = texture(uImage06, vTexcoord_atlas.xy);
+	//rtFragColor = texture(uImage06, vTexcoord_atlas.xy);
 	//rtFragColor = diffuseSample;
+	//rtFragColor = position_screen;
+	rtFragColor = normal_view;
+	
+
+	//transparency
+	rtFragColor.a = diffuseSample.a;
 }

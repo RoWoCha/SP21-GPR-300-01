@@ -68,41 +68,48 @@ out vec4 vTexcoord;
 out vec4 vTangent;
 out vec4 vBitangent;
 
+out vec4 vPosition_screen;
+
+const mat4 bias = mat4(
+	0.5, 0.0, 0.0, 0.0,
+	0.0, 0.5, 0.0, 0.0,
+	0.0, 0.0, 0.5, 0.0,
+	0.5, 0.5, 0.5, 1.0
+);
+
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
 	//gl_Position = aPosition;
 	gl_Position = uModelMatrixStack[uIndex].modelViewProjectionMat * aPosition;
+	vPosition_screen = bias * gl_Position;
 
 	vPosition = uModelMatrixStack[uIndex].modelViewMat * aPosition;
 	vNormal = uModelMatrixStack[uIndex].modelViewMatInverseTranspose * vec4(aNormal, 0.0);
 	vTexcoord = uModelMatrixStack[uIndex].atlasMat * aTexcoord;
 
+	/*
 	// Blue Book {
 	// Calculate normal (N) and tangent (T) vectors in view space from
 	// incoming object space vectors.
-	vec3 N = normalize(mat3(mv_matrix) * normal);
-	vec3 T = normalize(mat3(mv_matrix) * tangent);
+	vec3 N = normalize(vec3(uModelMatrixStack[uIndex].modelViewMatInverseTranspose * vec4(aNormal, 0.0)));
+	vec3 T = normalize(vec3(uModelMatrixStack[uIndex].modelViewMatInverseTranspose * aTangent));
 	// Calculate the bitangent vector (B) from the normal and tangent
 	// vectors.
-	vec3 B = cross(N, T);
+	//vec3 B = cross(N, T);
+	vec3 B = normalize(vec3(uModelMatrixStack[uIndex].modelViewMatInverseTranspose * aBitangent));
 	// The light vector (L) is the vector from the point of interest to
 	// the light. Calculate that and multiply it by the TBN matrix.
-	vec3 L = light_pos - P.xyz;
-	vs_out.lightDir = normalize(vec3(dot(V, T), dot(V, B), dot(V, N)));
+	//vec3 L = light_pos - P.xyz;
+	//vs_out.lightDir = normalize(vec3(dot(V, T), dot(V, B), dot(V, N)));
 	// The view vector is the vector from the point of interest to the
 	// viewer, which in view space is simply the negative of the position.
 	// Calculate that and multiply it by the TBN matrix.
-	vec3 V = -P.xyz;
-	vs_out.eyeDir = normalize(vec3(dot(V, T), dot(V, B), dot(V, N)));
-	// Pass the texture coordinate through unmodified so that the fragment
-	// shader can fetch from the normal and color maps.
-	vs_out.texcoord = texcoord;
-	// Calculate clip coordinates by multiplying our view position by
-	// the projection matrix.
-	gl_Position = proj_matrix * P;
+	//vec3 V = -P.xyz;
+	//vs_out.eyeDir = normalize(vec3(dot(V, T), dot(V, B), dot(V, N)));
 
 	// } Blue Book
+	*/
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;
