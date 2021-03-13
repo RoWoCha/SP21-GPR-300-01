@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO:
+// ****NOT DONE :(((( :
 //	-> declare samplers containing results of light pre-pass
 //	-> declare samplers for texcoords, diffuse and specular maps
 //	-> implement Phong sum with samples from the above
@@ -34,8 +34,36 @@ in vec4 vTexcoord_atlas;
 
 layout (location = 0) out vec4 rtFragColor;
 
+uniform sampler2D uImage03; // diffuse pre-pass
+uniform sampler2D uImage06; // specular pre-pass
+
+uniform sampler2D uImage00; // diffuse atlas
+uniform sampler2D uImage01; // specular atlas
+uniform sampler2D uImage04; // scene texcoord
+
+
 void main()
 {
+	vec4 sceneCoord = texture(uImage04, vTexcoord_atlas.xy);
+
+	//vec4 texcoord = sceneCoord / sceneCoord.w;
+
+	vec4 diffuseSample = texture(uImage00, sceneCoord.xy);
+	vec4 specularSample = texture(uImage01, sceneCoord.xy);
+
+	vec4 diffuseColor = texture(uImage03, sceneCoord.xy);
+	vec4 specularColor = texture(uImage06, sceneCoord.xy);
+
+	//vec4 ambient = vec4(0.00, 0.00, 0.00, 1.0);
+	vec4 ambient = vec4(0.05, 0.05, 0.05, 1.0);
+	rtFragColor = (diffuseSample * diffuseColor) + (specularSample * specularColor) + ambient;
+	//rtFragColor = diffuseColor;
+	rtFragColor.a = diffuseSample.a;
+	
+	
+
+
+
 	// DUMMY OUTPUT: all fragments are OPAQUE AQUA
-	rtFragColor = vec4(0.0, 1.0, 0.5, 1.0);
+	//rtFragColor = vec4(0.0, 1.0, 0.5, 1.0);
 }

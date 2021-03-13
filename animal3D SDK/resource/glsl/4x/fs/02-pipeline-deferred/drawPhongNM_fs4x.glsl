@@ -26,7 +26,7 @@
 
 #define MAX_LIGHTS 1024
 
-// ****TO-DO:
+// ****DONE:
 //	-> declare view-space varyings from vertex shader +
 //	-> declare point light data structure and uniform block +
 //	-> declare uniform samplers (diffuse, specular & normal maps) +

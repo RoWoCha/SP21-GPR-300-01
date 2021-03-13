@@ -91,7 +91,6 @@ void main()
 
 	vTangent = normalize(vec3(uModelMatrixStack[uIndex].modelViewMatInverseTranspose * vec4(aTangent, 0.0)));
 	vBitangent = normalize(uModelMatrixStack[uIndex].modelViewMatInverseTranspose * aBitangent);
-
 	vTBN = mat3(vTangent, vec3(vBitangent), normalize(vNormal));
 
 	/*

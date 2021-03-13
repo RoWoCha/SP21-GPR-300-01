@@ -139,9 +139,9 @@ void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a
 
 		// MV
 		a3mat4 transfMat = {
-			pointLightData->radius, 0.0f, 0.0f, pointLightData->position.x,
-			0.0f, pointLightData->radius, 0.0f, pointLightData->position.y,
-			0.0f, 0.0f, pointLightData->radius, pointLightData->position.z,
+			pointLightData->radius, 0.0f, 0.0f, pointLightData->worldPos.x,
+			0.0f, pointLightData->radius, 0.0f, pointLightData->worldPos.y,
+			0.0f, 0.0f, pointLightData->radius, pointLightData->worldPos.z,
 			0.0f, 0.0f, 0.0f, 1.0f
 		};
 

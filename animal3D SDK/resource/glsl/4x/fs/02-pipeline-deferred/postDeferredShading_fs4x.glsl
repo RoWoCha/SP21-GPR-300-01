@@ -26,7 +26,7 @@
 
 #define MAX_LIGHTS 1024
 
-// ****DONE:
+// ****TO-DO:
 //	-> this one is pretty similar to the forward shading algorithm (Phong NM) 
 //		except it happens on a plane, given images of the scene's geometric 
 //		data (the "g-buffers"); all of the information about the scene comes 
@@ -48,10 +48,10 @@ uniform sampler2D uImage01; // specular atlas
 
 uniform sampler2D uImage04; // scene texcoord
 uniform sampler2D uImage05; // scene normal
-uniform sampler2D uImage06; // scene position
+//uniform sampler2D uImage06; // scene position
 uniform sampler2D uImage07; // scene depth
 
-uniform mat4 upB_inv;		// Inverse bias-projection
+uniform mat4 uPB_inv;		// Inverse bias-projection
 
 // simple point light
 struct sPointLightData
@@ -125,7 +125,8 @@ void main()
 	vec4 position_screen = vTexcoord_atlas;
 	position_screen.z = texture(uImage07, vTexcoord_atlas.xy).r;
 	
-	vec4 position_view = upB_inv * position_screen;
+	// view-space fragment position
+	vec4 position_view = uPB_inv * position_screen;
 	position_view /= position_view.w;
 
 	vec4 normal_view = texture(uImage05, vTexcoord_atlas.xy);
@@ -137,11 +138,14 @@ void main()
 	vec4 specularSum = vec4(0.0);
 	vec4 lightRadiusInfo = vec4(0.0);
 
+	// for each light
 	for(int i = 0; i < uCount; i++)
 	{
+		// light radius data
 		lightRadiusInfo = vec4(uPointLightData[i].radius, uPointLightData[i].radiusSq,
 						uPointLightData[i].radiusInv, uPointLightData[i].radiusInvSq);
 
+		// getting diffuse and specular
 		calcPhongPoint(diffuseColor, specularColor,
 		-normalize(position_view), position_view, normal_view, diffuseSample,
 		uPointLightData[i].position, lightRadiusInfo, uPointLightData[i].color);

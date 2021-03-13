@@ -57,6 +57,7 @@ void main()
 	vec3 normalNM = (texture(uTex_nm, vTexcoord.xy).xyz - 0.5) * 2.0;
 	vec4 finalNormal = vec4(vTBN * normalNM, 0.0);
 	finalNormal = (finalNormal + 1.0) * 0.5;
+	rtNormal = finalNormal;
 
 	//rtPosition = vPosition;
 	rtPosition = vPosition_screen / vPosition_screen.w;
