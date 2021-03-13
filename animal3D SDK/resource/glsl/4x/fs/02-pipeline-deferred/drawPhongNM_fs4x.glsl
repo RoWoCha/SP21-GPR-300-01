@@ -22,6 +22,8 @@
 	Output Phong shading with normal mapping.
 */
 
+// Edited by Egor Fesenko
+
 #version 450
 
 #define MAX_LIGHTS 1024
@@ -97,11 +99,14 @@ void main()
 	vec4 specularSum = vec4(0.0);
 	vec4 lightRadiusInfo = vec4(0.0);
 
+	// for each light source
 	for(int i = 0; i < uCount; i++)
 	{
+		// light radius data
 		lightRadiusInfo = vec4(uPointLightData[i].radius, uPointLightData[i].radiusSq,
 						uPointLightData[i].radiusInv, uPointLightData[i].radiusInvSq);
 
+		//calculating diffuse and specular
 		calcPhongPoint(diffuseColor, specularColor,
 		-normalize(vPosition), vPosition, finalNormal, texture(uTex_dm, vTexcoord.xy),
 		uPointLightData[i].position, lightRadiusInfo, uPointLightData[i].color);

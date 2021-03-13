@@ -22,6 +22,8 @@
 	Composite results of light pre-pass in deferred pipeline.
 */
 
+// Edited by Egor Fesenko
+
 #version 450
 
 // ****NOT DONE :(((( :
@@ -48,9 +50,11 @@ void main()
 
 	//vec4 texcoord = sceneCoord / sceneCoord.w;
 
+	//atlases
 	vec4 diffuseSample = texture(uImage00, sceneCoord.xy);
 	vec4 specularSample = texture(uImage01, sceneCoord.xy);
 
+	//pre-passes
 	vec4 diffuseColor = texture(uImage03, sceneCoord.xy);
 	vec4 specularColor = texture(uImage06, sceneCoord.xy);
 

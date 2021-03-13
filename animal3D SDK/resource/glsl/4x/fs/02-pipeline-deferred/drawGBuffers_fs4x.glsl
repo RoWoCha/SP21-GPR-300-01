@@ -22,6 +22,8 @@
 	Output g-buffers for use in future passes.
 */
 
+// Edited by Egor Fesenko
+
 #version 450
 
 // ****DONE:

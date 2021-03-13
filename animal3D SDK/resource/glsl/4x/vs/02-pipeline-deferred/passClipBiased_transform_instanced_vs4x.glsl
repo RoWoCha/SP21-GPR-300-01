@@ -22,6 +22,8 @@
 	Calculate and biased clip coordinate with instancing.
 */
 
+// Edited by Egor Fesenko
+
 #version 450
 
 #define MAX_INSTANCES 1024

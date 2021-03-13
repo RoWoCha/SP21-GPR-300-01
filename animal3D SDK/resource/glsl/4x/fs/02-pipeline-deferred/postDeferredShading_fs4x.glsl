@@ -22,11 +22,13 @@
 	Calculate full-screen deferred Phong shading.
 */
 
+// Edited by Egor Fesenko
+
 #version 450
 
 #define MAX_LIGHTS 1024
 
-// ****TO-DO:
+// ****DONE:
 //	-> this one is pretty similar to the forward shading algorithm (Phong NM) 
 //		except it happens on a plane, given images of the scene's geometric 
 //		data (the "g-buffers"); all of the information about the scene comes 

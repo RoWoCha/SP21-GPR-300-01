@@ -25,7 +25,7 @@
 	*** RENDERING FOR ANIMATION SCENE MODE   ***
 	********************************************
 */
-
+// Edited by Egor Fesenko
 //-----------------------------------------------------------------------------
 
 #include "../a3_DemoMode2_SSFX.h"
@@ -351,7 +351,7 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		a3shaderProgramActivate(currentDemoProgram->program);
 		
 		a3demo_enableAdditiveBlending();
-		glCullFace(GL_FRONT);
+		glCullFace(GL_FRONT); //inverting
 		a3vertexDrawableActivateAndRenderInstanced(demoState->draw_unit_sphere, ssfxMaxCount_pointLight);
 		glCullFace(GL_BACK);
 		a3demo_enableCompositeBlending();
