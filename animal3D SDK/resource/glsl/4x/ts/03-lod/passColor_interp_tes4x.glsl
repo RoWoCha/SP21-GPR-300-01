@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> declare uniform block for spline waypoint and handle data
 //	-> implement spline interpolation algorithm based on scene object's path
 //	-> interpolate along curve using correct inputs and project result
@@ -42,28 +42,61 @@ uniform mat4 uP;
 
 out vec4 vColor;
 
+mat4 hermiteKernel = mat4(  1, 0, -3, 2,
+							0, 1, -2, 1,
+							0, 0, 3, -2,
+							0, 0, -1, 1  );
+
+mat4 catmullRomKernel = mat4(   0, -1, 2, -1,
+								2, 0, -5, 3,
+								0, 1, 4, -3,
+								0, 0, -1, 1   );
+
 void main()
 {
 	// gl_TessCoord for isolines:
 	//  [0] = how far along line [0, 1]
 	//  [1] = which line [0, 1)
-
 	// in this example
 	// gl_TessCoord[0] = interpolation parameter
 	// gl_TessCoord[1] = 0
 
-	int i0 = gl_PrimitiveID;
-	int i1 = (i0 + 1) % uCount;
-	float u = gl_TessCoord[0];
+	int p0 = gl_PrimitiveID;
+	int p1 = (p0 + 1) % uCount;
+	//int p2 = (p0 + 2) % uCount;
+	//int pNeg1 = (p0 - 1) % uCount;
+	float t = gl_TessCoord.x;
+	float tsq = t * t;
+	float tcu = t * t * t;
+	//vec4 polynTerms = vec4(1, t, t*t, t*t*t);
 
+	vec4 m0 = uCurveTangent[p0] - uCurveWaypoint[p0];
+	vec4 m1 = uCurveTangent[p1] - uCurveWaypoint[p1];
+
+	mat4 inflMat = mat4(uCurveWaypoint[p0], m0, uCurveWaypoint[p1], m1); 
+	//mat4 inflMat = mat4(uCurveWaypoint[pNeg1], uCurveWaypoint[p0], uCurveWaypoint[p1], uCurveWaypoint[p2]); 
+
+	
 	//vec4 p = vec4(gl_TessCoord[0], 0.0, -1.0, 1.0);
-	vec4 p = mix(
-			uCurveWaypoint[i0],
-			uCurveWaypoint[i1],
-			u );
+	//vec4 p = mix(uCurveWaypoint[p0], uCurveWaypoint[p1], t);
+	//vec4 p = 1/2 * inflMat * catmullRomKernel * polynTerms;
 
-	gl_Position = uP * p;
+	//vec4 p = 1/2 * vec4( (-t + 2 * tsq - tcu) * uCurveWaypoint[pNeg1] +
+	//					 (2 - 5 * tsq + 3 * tcu) * uCurveWaypoint[p0] +
+	//					 (t + 4* tsq - 3 * tcu) * uCurveWaypoint[p1] +
+	//					 (-tsq + tcu) * uCurveWaypoint[p2]);
+	//vec4 polynCatmullRom = vec4( (-t + 2 * tsq - tcu),
+	//						 (2 - 5 * tsq + 3 * tcu),
+	//					     (t + 4* tsq - 3 * tcu),
+	//					     (-tsq + tcu) );
+	vec4 polynHermite = vec4( (1 - 3 * tsq + 2 * tcu),
+							 (t - 2 * tsq + tcu),
+						     (3 * tsq - 2 * tcu),
+						     (-tsq + tcu) );
 
-	vColor = vec4(0.5, 0.5, u, 1.0);
+	//gl_Position = uP * 1/2 * inflMat * polynCatmullRom;
+	gl_Position = uP * inflMat * polynHermite;
+
+	vColor = vec4(0.0, 0.5, t, 1.0);
 	
 }
