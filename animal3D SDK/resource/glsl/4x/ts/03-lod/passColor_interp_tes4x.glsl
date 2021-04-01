@@ -31,11 +31,39 @@
 
 layout (isolines, equal_spacing) in;
 
+uniform ubCurve
+{
+	vec4 uCurveWaypoint[32];
+	vec4 uCurveTangent[32];
+};
+uniform int uCount;
+
 uniform mat4 uP;
 
 out vec4 vColor;
 
 void main()
 {
+	// gl_TessCoord for isolines:
+	//  [0] = how far along line [0, 1]
+	//  [1] = which line [0, 1)
+
+	// in this example
+	// gl_TessCoord[0] = interpolation parameter
+	// gl_TessCoord[1] = 0
+
+	int i0 = gl_PrimitiveID;
+	int i1 = (i0 + 1) % uCount;
+	float u = gl_TessCoord[0];
+
+	//vec4 p = vec4(gl_TessCoord[0], 0.0, -1.0, 1.0);
+	vec4 p = mix(
+			uCurveWaypoint[i0],
+			uCurveTangent[i1],
+			u );
+
+	gl_Position = uP * p;
+
+	vColor = vec4(0.5, 0.5, u, 1.0);
 	
 }
