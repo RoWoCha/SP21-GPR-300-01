@@ -22,6 +22,10 @@
 	Output Phong shading with parallax occlusion mapping (POM).
 */
 
+// Info sources:
+// 1) https://habr.com/ru/post/416163/  (sorry, it is in Russian:))
+// 2) https://learnopengl.com/Advanced-Lighting/Normal-Mapping
+
 #version 450
 
 #define MAX_LIGHTS 1024
@@ -60,12 +64,44 @@ void calcPhongPoint(out vec4 diffuseColor, out vec4 specularColor, in vec4 eyeVe
 	
 vec3 calcParallaxCoord(in vec3 coord, in vec3 viewVec, const int steps)
 {
-	// ****TO-DO:
+	// ****DONE?:
 	//	-> step along view vector until intersecting height map
 	//	-> determine precise intersection point, return resulting coordinate
 	
+	// Based on https://habr.com/ru/post/416163/  (sorry, it is in Russian:) )
+
+	float stepDepth = 1.0 / steps; // depth of each step
+    float currentDepth = 0.0; // current step depth
+
+    vec2 scalingParam = viewVec.xy / viewVec.z * 0.015f;
+    vec2 dTexcoord = scalingParam / steps; // delta per step
+  
+    vec2 currentTexcoord = coord.xy;
+    float currentDepthMapValue = texture(uTex_dm, currentTexcoord.xy).r;
+      
+    while(currentDepth < currentDepthMapValue)
+    {
+        // shift texture coordinate in direction of P
+        currentTexcoord -= dTexcoord;
+        // update depth map value using new texture coordinate
+        currentDepthMapValue = texture(uTex_dm, currentTexcoord.xy).r;  
+        // get depth of next step
+        currentDepth += stepDepth;  
+    }
+    
+    // texture coordinates before intersection (step back)
+    vec2 prevTexcoord = currentTexcoord + dTexcoord;
+
+    // get depth value after and before intersection for lerp
+    float afterDepth  = currentDepthMapValue - currentDepth;
+    float beforeDepth = texture(uTex_dm, prevTexcoord.xy).r - currentDepth + stepDepth;
+ 
+    // interpolation of texture coordinates
+    float t = afterDepth / (afterDepth - beforeDepth);
+    vec2 finalTexcoord = mix(currentTexcoord, prevTexcoord, t);
+
 	// done
-	return coord;
+	return vec3(finalTexcoord, 0.0f);
 }
 
 void main()
@@ -84,17 +120,17 @@ void main()
 	// view-space view vector
 	vec4 viewVec = normalize(kEyePos - pos_view);
 	
-	// ****TO-DO:
+	// ****DONE?:
 	//	-> convert view vector into tangent space
 	//		(hint: the above TBN bases convert tangent to view, figure out 
 	//		an efficient way of representing the required matrix operation)
 	// tangent-space view vector
-	vec3 viewVec_tan = vec3(
-		0.0,
-		0.0,
-		0.0
-	);
-	
+
+	mat3 TBN = { tan_view.xyz, bit_view.xyz, nrm_view.xyz };
+	// According to https://learnopengl.com/Advanced-Lighting/Normal-Mapping transpose is more efficient
+	//		and we can use it because TBN os an orthogonal matrix
+	vec3 viewVec_tan = transpose(TBN) * viewVec.xyz;
+
 	// parallax occlusion mapping
 	vec3 texcoord = vec3(vTexcoord_atlas.xy, uSize);
 	texcoord = calcParallaxCoord(texcoord, viewVec_tan, 256);
