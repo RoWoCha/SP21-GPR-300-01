@@ -64,7 +64,7 @@ void calcPhongPoint(out vec4 diffuseColor, out vec4 specularColor, in vec4 eyeVe
 	
 vec3 calcParallaxCoord(in vec3 coord, in vec3 viewVec, const int steps)
 {
-	// ****DONE?:
+	// ****DONE:
 	//	-> step along view vector until intersecting height map
 	//	-> determine precise intersection point, return resulting coordinate
 	
@@ -73,18 +73,18 @@ vec3 calcParallaxCoord(in vec3 coord, in vec3 viewVec, const int steps)
 	float stepDepth = 1.0 / steps; // depth of each step
     float currentDepth = 0.0; // current step depth
 
-    vec2 scalingParam = viewVec.xy / viewVec.z * 0.015f;
+    vec2 scalingParam = viewVec.xy / viewVec.z * - 0.01f;
     vec2 dTexcoord = scalingParam / steps; // delta per step
   
     vec2 currentTexcoord = coord.xy;
-    float currentDepthMapValue = texture(uTex_dm, currentTexcoord.xy).r;
+    float currentDepthMapValue = texture(uTex_hm, currentTexcoord.xy).r;
       
     while(currentDepth < currentDepthMapValue)
     {
         // shift texture coordinate in direction of P
         currentTexcoord -= dTexcoord;
         // update depth map value using new texture coordinate
-        currentDepthMapValue = texture(uTex_dm, currentTexcoord.xy).r;  
+        currentDepthMapValue = texture(uTex_hm, currentTexcoord.xy).r;  
         // get depth of next step
         currentDepth += stepDepth;  
     }
@@ -120,7 +120,7 @@ void main()
 	// view-space view vector
 	vec4 viewVec = normalize(kEyePos - pos_view);
 	
-	// ****DONE?:
+	// ****DONE:
 	//	-> convert view vector into tangent space
 	//		(hint: the above TBN bases convert tangent to view, figure out 
 	//		an efficient way of representing the required matrix operation)
