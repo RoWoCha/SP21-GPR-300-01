@@ -86,9 +86,9 @@ void drawWireframe()
 
 void drawVertexTangent()
 {
-	vec4 t = uP * normalize(vVertexData[0].vTangentBasis_view[0]) * size;
-	vec4 b = uP * normalize(vVertexData[0].vTangentBasis_view[1]) * size;
-	vec4 n = uP * normalize(vVertexData[0].vTangentBasis_view[2]) * size;
+	vec4 t = uP * normalize(vVertexData[0].vTangentBasis_view[0]) * size; // tangent offset
+	vec4 b = uP * normalize(vVertexData[0].vTangentBasis_view[1]) * size; // bitangent offset
+	vec4 n = uP * normalize(vVertexData[0].vTangentBasis_view[2]) * size; // normal offset
 
 	vColor = vec4(0.7, 0.7, 0.0, 1.0);
 	gl_Position = gl_in[0].gl_Position;
@@ -114,7 +114,9 @@ void drawVertexTangent()
 
 void drawFaceTangent()
 {
-	vec4 faceCenterCoord = (gl_in[0].gl_Position + gl_in[1].gl_Position + gl_in[2].gl_Position) / 3;
+	vec4 faceCenterCoord = (gl_in[0].gl_Position + gl_in[1].gl_Position + gl_in[2].gl_Position) / 3; // center of triangle
+
+	// Averages of T, B and N of triangle vertices
 	vec4 faceCenterT = uP * normalize((vVertexData[0].vTangentBasis_view[0] + vVertexData[1].vTangentBasis_view[0] + vVertexData[2].vTangentBasis_view[0]) / 3) * size;
 	vec4 faceCenterB = uP * normalize((vVertexData[0].vTangentBasis_view[1] + vVertexData[1].vTangentBasis_view[1] + vVertexData[2].vTangentBasis_view[1]) / 3) * size;
 	vec4 faceCenterN = uP * normalize((vVertexData[0].vTangentBasis_view[2] + vVertexData[1].vTangentBasis_view[2] + vVertexData[2].vTangentBasis_view[2]) / 3) * size;

@@ -72,6 +72,7 @@ void main()
 	float tcu = t * t * t;
 	//vec4 polynTerms = vec4(1, t, t*t, t*t*t);
 
+	// vectors from key points to handles
 	vec4 m0 = uCurveTangent[p0] - uCurveWaypoint[p0];
 	vec4 m1 = uCurveTangent[p1] - uCurveWaypoint[p1];
 
