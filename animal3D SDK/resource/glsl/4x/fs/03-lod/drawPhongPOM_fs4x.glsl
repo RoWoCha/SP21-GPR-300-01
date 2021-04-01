@@ -22,6 +22,8 @@
 	Output Phong shading with parallax occlusion mapping (POM).
 */
 
+// Edited by Egor Fesenko
+
 // Info sources:
 // 1) https://habr.com/ru/post/416163/  (sorry, it is in Russian:))
 // 2) https://learnopengl.com/Advanced-Lighting/Normal-Mapping

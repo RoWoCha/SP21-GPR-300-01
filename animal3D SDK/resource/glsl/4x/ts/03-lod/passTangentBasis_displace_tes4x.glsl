@@ -22,12 +22,14 @@
 	Pass interpolated and displaced tangent basis.
 */
 
+// Edited by Egor Fesenko
+
 // Info sources:
 // 1) https://stackoverflow.com/questions/24166446/glsl-tessellation-displacement-mapping
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> declare inbound and outbound varyings to pass along vertex data
 //		(hint: inbound matches TCS naming and is still an array)
 //		(hint: outbound matches GS/FS naming and is singular)

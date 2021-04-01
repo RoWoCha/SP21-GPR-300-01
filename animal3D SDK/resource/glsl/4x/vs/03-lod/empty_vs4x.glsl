@@ -22,6 +22,8 @@
 	Empty vertex shader.
 */
 
+// Edited by Egor Fesenko
+
 #version 450
 
 // ****DONE: 

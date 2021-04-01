@@ -23,9 +23,11 @@
 		determined by flag passed to program.
 */
 
+// Edited by Egor Fesenko
+
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> declare varying data to read from vertex shader
 //		(hint: it's an array this time, one per vertex in primitive)
 //	-> use vertex data to generate lines that highlight the input triangle

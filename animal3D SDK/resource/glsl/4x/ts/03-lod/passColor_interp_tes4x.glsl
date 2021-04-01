@@ -22,6 +22,8 @@
 	Pass color, outputting result of interpolation.
 */
 
+// Edited by Egor Fesenko
+
 #version 450
 
 // ****DONE: 

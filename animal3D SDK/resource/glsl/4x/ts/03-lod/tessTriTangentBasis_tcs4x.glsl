@@ -22,6 +22,8 @@
 	Tessellation control passing tangent basis (pass-thru).
 */
 
+// Edited by Egor Fesenko
+
 #version 450
 
 // ****DONE: 
