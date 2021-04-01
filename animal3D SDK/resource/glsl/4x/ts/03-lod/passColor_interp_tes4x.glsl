@@ -59,7 +59,7 @@ void main()
 	//vec4 p = vec4(gl_TessCoord[0], 0.0, -1.0, 1.0);
 	vec4 p = mix(
 			uCurveWaypoint[i0],
-			uCurveTangent[i1],
+			uCurveWaypoint[i1],
 			u );
 
 	gl_Position = uP * p;

@@ -53,13 +53,44 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 	{
 		a3_SceneObjectData* sceneObjectData = demoMode->obj_teapot->dataPtr;
 
-		// ****TO-DO: 
+		// ****DONE: 
 		//	-> interpolate teapot's position using algorithm that matches path drawn
 		//		(hint: use the one that looks the best)
 		//	-> update the animation timer
 		//		(hint: check if we've surpassed the segment's duration)
 		// teapot follows curved path
 
+		demoMode->curveSegmentTime += (a3real)dt;
+
+		if (demoMode->curveSegmentTime >= demoMode->curveSegmentDuration) // when reach the end of segment
+		{
+			demoMode->curveSegmentTime -= demoMode->curveSegmentDuration; // nullifying segment time
+			demoMode->curveSegmentIndex = (demoMode->curveSegmentIndex + 1) % demoMode->curveWaypointCount; // switching to the next segment + checking if out of bounds
+		}
+
+		demoMode->curveSegmentParam = demoMode->curveSegmentTime * demoMode->curveSegmentDurationInv; // interpolation coeff
+
+		// Linear Interpolation (LERP)
+		/*a3real3Lerp(sceneObjectData->position.v,
+			demoMode->curveWaypoint[demoMode->curveSegmentIndex + 0].v,
+			demoMode->curveWaypoint[(demoMode->curveSegmentIndex + 1) % demoMode->curveWaypointCount].v,
+			demoMode->curveSegmentParam);*/
+
+		// Catmull-Rom
+		/*a3real3CatmullRom(sceneObjectData->position.v,
+			demoMode->curveWaypoint[a3maximum(0, (demoMode->curveSegmentIndex - 1) % demoMode->curveWaypointCount)].v,
+			demoMode->curveWaypoint[demoMode->curveSegmentIndex + 0].v,
+			demoMode->curveWaypoint[(demoMode->curveSegmentIndex + 1) % demoMode->curveWaypointCount].v,
+			demoMode->curveWaypoint[a3minimum((demoMode->curveSegmentIndex + 2) % demoMode->curveWaypointCount, (demoMode->curveWaypointCount - 1) % demoMode->curveWaypointCount)].v,
+			demoMode->curveSegmentParam);*/
+
+		// Cubic Hermite
+		a3real3HermiteControl(sceneObjectData->position.v,
+			demoMode->curveWaypoint[demoMode->curveSegmentIndex + 0].v,
+			demoMode->curveWaypoint[(demoMode->curveSegmentIndex + 1) % demoMode->curveWaypointCount].v,
+			demoMode->curveTangent[demoMode->curveSegmentIndex + 0].v,
+			demoMode->curveTangent[(demoMode->curveSegmentIndex + 1) % demoMode->curveWaypointCount].v,
+			demoMode->curveSegmentParam);
 	}
 }
 
