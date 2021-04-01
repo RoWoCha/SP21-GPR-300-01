@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> declare inbound and outbound varyings to pass along vertex data
 //		(hint: inbound matches VS naming but is now an array)
 //		(hint: outbound matches TES naming and is also an array)
@@ -59,4 +59,7 @@ void main()
 	gl_TessLevelOuter[1] = uLevelOuter[1];
 	gl_TessLevelOuter[2] = uLevelOuter[2];
 	gl_TessLevelInner[0] = uLevelInner;
+
+	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+
 }

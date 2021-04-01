@@ -22,6 +22,9 @@
 	Pass interpolated and displaced tangent basis.
 */
 
+// Info sources:
+// 1) https://stackoverflow.com/questions/24166446/glsl-tessellation-displacement-mapping
+
 #version 450
 
 // ****TO-DO: 
@@ -45,9 +48,52 @@ out vbVertexData {
 	vec4 vTexcoord_atlas;
 };
 
+uniform sampler2D uTex_hm;
+
 void main()
 {
 	// gl_TessCoord -> barycentric (3 elements)
 	//  gl_InvocationID
 	// gl_Position = ?
+
+	// Based on https://stackoverflow.com/questions/24166446/glsl-tessellation-displacement-mapping
+
+	vec4 p0 = gl_TessCoord.x * gl_in[0].gl_Position;
+    vec4 p1 = gl_TessCoord.y * gl_in[1].gl_Position;
+    vec4 p2 = gl_TessCoord.z * gl_in[2].gl_Position;
+    vec4 pos = p0 + p1 + p2;
+
+    vec4 n0 = gl_TessCoord.x * vVertexData_tess[0].vTangentBasis_view[2];
+    vec4 n1 = gl_TessCoord.y * vVertexData_tess[1].vTangentBasis_view[2];
+    vec4 n2 = gl_TessCoord.z * vVertexData_tess[2].vTangentBasis_view[2];
+    vec4 normal = normalize(n0 + n1 + n2);
+
+    vec4 tc0 = gl_TessCoord.x * vVertexData_tess[0].vTexcoord_atlas;
+    vec4 tc1 = gl_TessCoord.y * vVertexData_tess[1].vTexcoord_atlas;
+    vec4 tc2 = gl_TessCoord.z * vVertexData_tess[2].vTexcoord_atlas;  
+    vec4 tessTexcoord = tc0 + tc1 + tc2;
+
+	vec4 t0 = gl_TessCoord.x * vVertexData_tess[0].vTangentBasis_view[0];
+    vec4 t1 = gl_TessCoord.y * vVertexData_tess[1].vTangentBasis_view[0];
+    vec4 t2 = gl_TessCoord.z * vVertexData_tess[2].vTangentBasis_view[0];
+    vec4 tangent = normalize(t0 + t1 + n2);
+
+	vec4 b0 = gl_TessCoord.x * vVertexData_tess[0].vTangentBasis_view[1];
+    vec4 b1 = gl_TessCoord.y * vVertexData_tess[1].vTangentBasis_view[1];
+    vec4 b2 = gl_TessCoord.z * vVertexData_tess[2].vTangentBasis_view[1];
+    vec4 bitangent = normalize(b0 + b1 + b2);
+
+	vec4 v0 = gl_TessCoord.x * vVertexData_tess[0].vTangentBasis_view[3];
+    vec4 v1 = gl_TessCoord.y * vVertexData_tess[1].vTangentBasis_view[3];
+    vec4 v2 = gl_TessCoord.z * vVertexData_tess[2].vTangentBasis_view[3];
+    vec4 view = normalize(v0 + v1 + v2);
+
+    float height = texture(uTex_hm, tessTexcoord.xy).r;
+    pos += normal * (height * 0.4f);
+
+	vTangentBasis_view = mat4(tangent, bitangent, normal, view);
+	vTexcoord_atlas = tessTexcoord;
+
+	//output
+	gl_Position = pos; 
 }
