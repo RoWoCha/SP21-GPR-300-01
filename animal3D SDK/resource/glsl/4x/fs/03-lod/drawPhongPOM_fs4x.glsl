@@ -94,7 +94,7 @@ vec3 calcParallaxCoord(in vec3 coord, in vec3 viewVec, const int steps)
 
     // get depth value after and before intersection for lerp
     float afterDepth  = currentDepthMapValue - currentDepth;
-    float beforeDepth = texture(uTex_dm, prevTexcoord.xy).r - currentDepth + stepDepth;
+    float beforeDepth = texture(uTex_hm, prevTexcoord.xy).r - currentDepth + stepDepth;
  
     // interpolation of texture coordinates
     float t = afterDepth / (afterDepth - beforeDepth);
