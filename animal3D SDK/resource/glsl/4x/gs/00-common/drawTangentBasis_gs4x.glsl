@@ -50,7 +50,11 @@ in vbVertexData {
 	vec4 vTexcoord_atlas;
 } vVertexData[];
 
+uniform mat4 uP;
+
 out vec4 vColor;
+
+const float size = 0.1;
 
 void drawWireframe()
 {
@@ -70,7 +74,6 @@ void drawWireframe()
 	EmitVertex();
 	EndPrimitive();
 
-
 	vColor = vec4(0.0, 0.0, 1.0, 1.0);
 	gl_Position = gl_in[2].gl_Position;
 	EmitVertex();
@@ -79,7 +82,66 @@ void drawWireframe()
 	EndPrimitive();
 }
 
+void drawVertexTangent()
+{
+	vec4 t = uP * normalize(vVertexData[0].vTangentBasis_view[0]) * size;
+	vec4 b = uP * normalize(vVertexData[0].vTangentBasis_view[1]) * size;
+	vec4 n = uP * normalize(vVertexData[0].vTangentBasis_view[2]) * size;
+
+	vColor = vec4(0.7, 0.7, 0.0, 1.0);
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[0].gl_Position + t;
+	EmitVertex();
+	EndPrimitive();
+	
+	vColor = vec4(0.0, 0.7, 0.7, 1.0);
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[0].gl_Position + b;
+	EmitVertex();
+	EndPrimitive();
+	
+	vColor = vec4(0.7, 0.0, 0.7, 1.0);
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[0].gl_Position + n;
+	EmitVertex();
+	EndPrimitive();
+}
+
+void drawFaceTangent()
+{
+	vec4 faceCenterCoord = (gl_in[0].gl_Position + gl_in[1].gl_Position + gl_in[2].gl_Position) / 3;
+	vec4 faceCenterT = uP * normalize((vVertexData[0].vTangentBasis_view[0] + vVertexData[1].vTangentBasis_view[0] + vVertexData[2].vTangentBasis_view[0]) / 3) * size;
+	vec4 faceCenterB = uP * normalize((vVertexData[0].vTangentBasis_view[1] + vVertexData[1].vTangentBasis_view[1] + vVertexData[2].vTangentBasis_view[1]) / 3) * size;
+	vec4 faceCenterN = uP * normalize((vVertexData[0].vTangentBasis_view[2] + vVertexData[1].vTangentBasis_view[2] + vVertexData[2].vTangentBasis_view[2]) / 3) * size;
+
+	vColor = vec4(0.7, 0.7, 0.0, 1.0);
+	gl_Position = faceCenterCoord;
+	EmitVertex();
+	gl_Position = faceCenterCoord + faceCenterT;
+	EmitVertex();
+	EndPrimitive();
+	
+	vColor = vec4(0.0, 0.7, 0.7, 1.0);
+	gl_Position = faceCenterCoord;
+	EmitVertex();
+	gl_Position = faceCenterCoord + faceCenterB;
+	EmitVertex();
+	EndPrimitive();
+	
+	vColor = vec4(0.7, 0.0, 0.7, 1.0);
+	gl_Position = faceCenterCoord;
+	EmitVertex();
+	gl_Position = faceCenterCoord + faceCenterN;
+	EmitVertex();
+	EndPrimitive();
+}
+
 void main()
 {
 	drawWireframe();
+	drawVertexTangent();
+	drawFaceTangent();
 }
