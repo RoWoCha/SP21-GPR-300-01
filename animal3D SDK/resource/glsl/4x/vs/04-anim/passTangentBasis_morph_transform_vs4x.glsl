@@ -34,11 +34,31 @@
 //		(hint: results can be stored in local variables named after the 
 //		complete tangent basis attributes provided before any changes)
 
+/*
 layout (location = 0) in vec4 aPosition;
 layout (location = 2) in vec3 aNormal;
 layout (location = 8) in vec4 aTexcoord;
 layout (location = 10) in vec3 aTangent;
 layout (location = 11) in vec3 aBitangent;
+*/
+
+// single morph target: position, normal, tangent
+//	-> we can have 5 targets: 16 total attribs / 3 per target
+//	-> leftover attrib: texcoord
+
+// not morph target: texcoord, bitangent
+//	-> texcoord is common attribute
+//	-> bitangent is normal x tangent (cross)
+
+struct sMorphTarget
+{
+	vec4 position;
+	vec3 normal;	float nPad;
+	vec3 tangent;	float tPad;
+};
+
+layout (location = 0) in sMorphTarget aMorphTarget[5];
+// need texcoord
 
 struct sModelMatrixStack
 {
@@ -71,6 +91,11 @@ void main()
 	// DUMMY OUTPUT: directly assign input position to output position
 	//gl_Position = aPosition;
 	
+	vec4 aPosition;
+	vec3 aTangent, aBitangent, aNormal;
+
+	// testing: copy first morph target
+
 	sModelMatrixStack t = uModelMatrixStack[uIndex];
 	
 	vTangentBasis_view = t.modelViewMatInverseTranspose * mat4(aTangent, 0.0, aBitangent, 0.0, aNormal, 0.0, vec4(0.0));
