@@ -28,6 +28,8 @@
 
 //-----------------------------------------------------------------------------
 
+// Edited by Egor Fesenko
+
 #include "../a3_DemoMode4_Animate.h"
 
 //typedef struct a3_DemoState a3_DemoState;

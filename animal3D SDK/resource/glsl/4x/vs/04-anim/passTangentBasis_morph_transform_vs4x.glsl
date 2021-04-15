@@ -29,10 +29,10 @@
 #define MAX_OBJECTS 128
 
 // ****TO-DO: 
-//	-> declare morph target attributes
-//	-> declare and implement morph target interpolation algorithm
-//	-> declare interpolation time/param/keyframe uniform
-//	-> perform morph target interpolation using correct attributes
+//	-> declare morph target attributes +
+//	-> declare and implement morph target interpolation algorithm  +
+//	-> declare interpolation time/param/keyframe uniform +
+//	-> perform morph target interpolation using correct attributes +
 //		(hint: results can be stored in local variables named after the 
 //		complete tangent basis attributes provided before any changes)
 
@@ -55,12 +55,13 @@ layout (location = 11) in vec3 aBitangent;
 struct sMorphTarget
 {
 	vec4 position;
-	vec3 normal;	float nPad;
-	vec3 tangent;	float tPad;
+	vec3 normal;	//float nPad; // kills my gpu
+	vec3 tangent;	//float tPad; // kills my gpu
 };
 
 layout (location = 0) in sMorphTarget aMorphTarget[5];
 // need texcoord
+layout (location = 15) in vec4 aTexcoord;
 
 struct sModelMatrixStack
 {
@@ -80,6 +81,8 @@ uniform ubTransformStack
 };
 uniform int uIndex;
 
+uniform float uTime; // is a keyframeTime (= index + param)
+
 out vbVertexData {
 	mat4 vTangentBasis_view;
 	vec4 vTexcoord_atlas;
@@ -87,6 +90,11 @@ out vbVertexData {
 
 flat out int vVertexID;
 flat out int vInstanceID;
+
+//mat4 hermiteMat = mat4(	1.0, 0.0, 0.0, 0.0,
+//							0.0, 1.0, 0.0, 0.0,
+//							-3.0, -2.0, 3.0, -1.0,
+//							2.0, 1.0, -2.0, 1.0   );
 
 void main()
 {
@@ -97,9 +105,17 @@ void main()
 	vec3 aTangent, aBitangent, aNormal;
 
 	// testing: copy first morph target
-
 	sModelMatrixStack t = uModelMatrixStack[uIndex];
-	
+
+	int index = int(uTime); // rounding off the keyframeTime to get index
+	float param = uTime - index; // getting 't'
+
+	// lerping position, tangent, normal and bitangent
+	aPosition = aMorphTarget[index].position + (aMorphTarget[(index + 1) % 5].position - aMorphTarget[index].position) * param;
+	aTangent = aMorphTarget[index].tangent + (aMorphTarget[(index + 1) % 5].tangent - aMorphTarget[index].tangent) * param;
+	aNormal = aMorphTarget[index].normal + (aMorphTarget[(index + 1) % 5].normal - aMorphTarget[index].normal) * param;
+	aBitangent = cross(aTangent, aNormal);
+
 	vTangentBasis_view = t.modelViewMatInverseTranspose * mat4(aTangent, 0.0, aBitangent, 0.0, aNormal, 0.0, vec4(0.0));
 	vTangentBasis_view[3] = t.modelViewMat * aPosition;
 	gl_Position = t.modelViewProjectionMat * aPosition;
