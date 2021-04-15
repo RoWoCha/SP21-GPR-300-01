@@ -22,6 +22,8 @@
 	Calculate and pass morphed tangent basis.
 */
 
+// Edited by Egor Fesenko
+
 #version 450
 
 #define MAX_OBJECTS 128
